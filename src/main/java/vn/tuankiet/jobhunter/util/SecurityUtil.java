@@ -22,6 +22,9 @@ public class SecurityUtil {
     @Value("${tuankiet.jwt.token-validity-in-seconds}")
     private long jwtExpiration;
 
+    @Value("${tuankiet.jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenExpiration;
+
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
     public void createToken(Authentication authentication) {
