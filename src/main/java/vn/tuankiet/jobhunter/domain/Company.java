@@ -17,31 +17,39 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
-@Table(name = "companies")
+@Table(name = "CONGTY")
 @Entity
 @Getter
 @Setter
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "maCongTy")
     private long id;
 
     @NotBlank(message = "name không được để trống")
+    @Column(name = "ten")
     private String name;
 
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(name = "moTa", columnDefinition = "MEDIUMTEXT")
     private String description;
 
+    @Column(name = "diaChi")
     private String address;
 
+    @Column(name = "logo")
     private String logo;
 
+    @Column(name = "ngayTao")
     private Instant createdAt;
 
+    @Column(name = "ngayCapNhat")
     private Instant updatedAt;
 
+    @Column(name = "nguoiTao")
     private String createdBy;
 
+    @Column(name = "nguoiCapNhat")
     private String updatedBy;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)

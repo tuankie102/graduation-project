@@ -24,60 +24,67 @@ import vn.tuankiet.jobhunter.util.SecurityUtil;
 import vn.tuankiet.jobhunter.util.constant.GenderEnum;
 
 @Entity
-@Table(name = "users")
+@Table(name = "NGUOIDUNG")
 @Getter
 @Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "maNguoiDung")
     private long id;
 
+    @Column(name = "ten")
     private String name;
 
     @NotBlank(message = "email không được để trống")
+    @Column(name = "email")
     private String email;
 
-    @NotBlank(message = "password không được để trống")
+    @NotBlank(message = "matKhau không được để trống")
+    @Column(name = "matKhau")
     private String password;
 
+    @Column(name = "tuoi")
     private int age;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "gioiTinh")
     private GenderEnum gender;
 
+    @Column(name = "diaChi")
     private String address;
 
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(name = "refreshToken", columnDefinition = "MEDIUMTEXT")
     private String refreshToken;
 
+    @Column(name = "ngayTao")
     private Instant createdAt;
+    @Column(name = "ngayCapNhat")
     private Instant updatedAt;
+    @Column(name = "nguoiTao")
     private String createdBy;
+    @Column(name = "nguoiCapNhat")
     private String updatedBy;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
+    @JoinColumn(name = "maCongTy")
     private Company company;
+
+    @ManyToOne
+    @JoinColumn(name = "maVaiTro")
+    private Role role;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonIgnore
-    List<Resume> resumes;
-
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    private List<Post> posts;
 
     @PrePersist
     public void handleBeforeCreate() {
-        
-
         this.createdAt = Instant.now();
     }
 
     @PreUpdate
     public void handleBeforeUpdate() {
-        
-
         this.updatedAt = Instant.now();
     }
 }

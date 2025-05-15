@@ -30,50 +30,59 @@ import lombok.Setter;
 import vn.tuankiet.jobhunter.util.constant.LevelEnum;
 
 @Entity
-@Table(name = "jobs")
+@Table(name = "CONGVIEC")
 @Getter
 @Setter
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "maCongViec")
     private long id;
 
     @NotBlank(message = "name không được để trống")
+    @Column(name = "ten")
     private String name;
 
     @NotBlank(message = "location không được để trống")
+    @Column(name = "viTri")
     private String location;
 
+    @Column(name = "luongCoBan")
     private double salary;
 
+    @Column(name = "soLuong")
     private int quantity;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "capDo")
     private LevelEnum level;
 
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column(name = "moTa", columnDefinition = "MEDIUMTEXT")
     private String description;
 
-    private Instant startDate;
-    private Instant endDate;
+    @Column(name = "hoatDong")
     private boolean active;
+    @Column(name = "ngayTao")
     private Instant createdAt;
+    @Column(name = "ngayCapNhat")
     private Instant updatedAt;
+    @Column(name = "nguoiTao")
     private String createdBy;
+    @Column(name = "nguoiCapNhat")
     private String updatedBy;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
+    @JoinColumn(name = "maCongTy")
     private Company company;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "jobs" })
-    @JoinTable(name = "job_skill", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    @JoinTable(name = "CHITIETCONGVIEC", joinColumns = @JoinColumn(name = "maCongViec"), inverseJoinColumns = @JoinColumn(name = "maKyNang"))
     private List<Skill> skills;
 
     @OneToMany(mappedBy = "job", fetch = FetchType.LAZY)
     @JsonIgnore
-    List<Resume> resumes;
+    private List<Post> posts;
 
     @PrePersist
     public void handleBeforeCreate() {

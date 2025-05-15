@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,42 +23,44 @@ import lombok.Setter;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
 
 @Entity
-@Table(name = "subscribers")
+@Table(name = "NGUOIDANGKY")
 @Getter
 @Setter
 public class Subscriber {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "maNguoiDangKy")
     private long id;
 
     @NotBlank(message = "email không được để trống")
+    @Column(name = "email")
     private String email;
 
     @NotBlank(message = "name không được để trống")
+    @Column(name = "ten")
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "subscribers" })
-    @JoinTable(name = "subscriber_skill", joinColumns = @JoinColumn(name = "subscriber_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    @JoinTable(name = "CHITIETNGUOIDANGKY", joinColumns = @JoinColumn(name = "maNguoiDangKy"), inverseJoinColumns = @JoinColumn(name = "maKyNang"))
     private List<Skill> skills;
 
+    @Column(name = "ngayTao")
     private Instant createdAt;
+    @Column(name = "ngayCapNhat")
     private Instant updatedAt;
+    @Column(name = "nguoiTao")
     private String createdBy;
+    @Column(name = "nguoiCapNhat")
     private String updatedBy;
 
     @PrePersist
     public void handleBeforeCreate() {
-       
-
         this.createdAt = Instant.now();
     }
 
     @PreUpdate
     public void handleBeforeUpdate() {
-        
-
         this.updatedAt = Instant.now();
     }
-
 }

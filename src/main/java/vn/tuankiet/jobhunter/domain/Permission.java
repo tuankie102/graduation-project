@@ -19,30 +19,39 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "permissions")
+@Table(name = "QUYEN")
 @Getter
 @Setter
 @NoArgsConstructor
 public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "maQuyen")
     private long id;
 
     @NotBlank(message = "name không được để trống")
+    @Column(name = "ten")
     private String name;
 
     @NotBlank(message = "apiPath không được để trống")
+    @Column(name = "duongDanApi")
     private String apiPath;
 
     @NotBlank(message = "method không được để trống")
+    @Column(name = "phuongThuc")
     private String method;
 
     @NotBlank(message = "module không được để trống")
+    @Column(name = "chucNang")
     private String module;
 
+    @Column(name = "ngayTao")
     private Instant createdAt;
+    @Column(name = "ngayCapNhat")
     private Instant updatedAt;
+    @Column(name = "nguoiTao")
     private String createdBy;
+    @Column(name = "nguoiCapNhat")
     private String updatedBy;
 
     public Permission(String name, String apiPath, String method, String module) {

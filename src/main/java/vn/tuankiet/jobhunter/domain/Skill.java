@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,20 +21,26 @@ import lombok.Setter;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
 
 @Entity
-@Table(name = "skills")
+@Table(name = "KYNANG")
 @Getter
 @Setter
 public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "maKyNang")
     private long id;
 
     @NotBlank(message = "name không được để trống")
+    @Column(name = "ten")
     private String name;
 
+    @Column(name = "ngayTao")
     private Instant createdAt;
+    @Column(name = "ngayCapNhat")
     private Instant updatedAt;
+    @Column(name = "nguoiTao")
     private String createdBy;
+    @Column(name = "nguoiCapNhat")
     private String updatedBy;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "skills")
@@ -46,15 +53,11 @@ public class Skill {
 
     @PrePersist
     public void handleBeforeCreate() {
-        
-
         this.createdAt = Instant.now();
     }
 
     @PreUpdate
     public void handleBeforeUpdate() {
-        
-
         this.updatedAt = Instant.now();
     }
 }
