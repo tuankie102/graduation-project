@@ -30,5 +30,4 @@ public class ResCreateJobDTO {
 
     private String description;
     private String companyName;
-    private List<Long> postIds;
 }
