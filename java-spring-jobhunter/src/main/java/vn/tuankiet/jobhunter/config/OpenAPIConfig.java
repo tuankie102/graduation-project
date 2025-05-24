@@ -32,7 +32,7 @@ public class OpenAPIConfig {
     private Contact createContact() {
         return new Contact()
                 .email("ads.tuankiet@gmail.com")
-                .name("Hỏi Dân IT")
+                .name("Tuan Kiet")
                 .url("https://tuankiet.vn");
     }
 

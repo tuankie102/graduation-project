@@ -30,5 +30,6 @@ public class ResUpdateJobDTO {
 
     private String description;
     private String companyName;
+    private String jobName;
     private List<Long> postIds;
 }

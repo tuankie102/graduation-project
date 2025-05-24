@@ -71,6 +71,12 @@ public class DatabaseInitializer implements CommandLineRunner {
             arr.add(new Permission("Get a role by id", "/api/v1/roles/{id}", "GET", "ROLES"));
             arr.add(new Permission("Get roles with pagination", "/api/v1/roles", "GET", "ROLES"));
 
+            arr.add(new Permission("Create a post", "/api/v1/posts", "POST", "POSTS"));
+            arr.add(new Permission("Update a post", "/api/v1/posts", "PUT", "POSTS"));
+            arr.add(new Permission("Delete a post", "/api/v1/posts/{id}", "DELETE", "POSTS"));
+            arr.add(new Permission("Get a post by id", "/api/v1/posts/{id}", "GET", "POSTS"));
+            arr.add(new Permission("Get posts with pagination", "/api/v1/posts", "GET", "POSTS"));
+
             arr.add(new Permission("Create a user", "/api/v1/users", "POST", "USERS"));
             arr.add(new Permission("Update a user", "/api/v1/users", "PUT", "USERS"));
             arr.add(new Permission("Delete a user", "/api/v1/users/{id}", "DELETE", "USERS"));

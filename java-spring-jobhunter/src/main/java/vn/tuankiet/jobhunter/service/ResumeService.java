@@ -111,6 +111,7 @@ public class ResumeService {
 
         if (resume.getPost() != null) {
             res.setCompanyName(resume.getPost().getJob().getCompany().getName());
+            res.setJobName(resume.getPost().getJob().getName());
         }
 
         res.setUser(new ResFetchResumeDTO.UserResume(resume.getUser().getId(), resume.getUser().getName()));

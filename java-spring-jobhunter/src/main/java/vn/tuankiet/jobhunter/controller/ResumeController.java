@@ -110,27 +110,39 @@ public class ResumeController {
     public ResponseEntity<ResultPaginationDTO> fetchAll(
             @Filter Specification<Resume> spec,
             Pageable pageable) {
-
-        List<Long> arrJobIds = null;
+        List<Long> arrPostIds = null;
         String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
         User currentUser = this.userService.handleGetUserByUsername(email);
+        boolean isSuperAdmin = currentUser != null && currentUser.getRole().getName().equalsIgnoreCase("SUPER_ADMIN");
+        if (isSuperAdmin) {
+            // Không filter theo post, chỉ dùng spec truyền vào
+            return ResponseEntity.ok().body(this.resumeService.fetchAllResume(spec, pageable));
+        }
         if (currentUser != null) {
             Company userCompany = currentUser.getCompany();
             if (userCompany != null) {
                 List<Job> companyJobs = userCompany.getJobs();
                 if (companyJobs != null && companyJobs.size() > 0) {
-                    arrJobIds = companyJobs.stream().map(x -> x.getId())
-                            .collect(Collectors.toList());
+                    arrPostIds = companyJobs.stream()
+                        .flatMap(job -> job.getPosts() != null ? job.getPosts().stream() : java.util.stream.Stream.empty())
+                        .map(post -> post.getId())
+                        .collect(Collectors.toList());
                 }
             }
         }
 
-        Specification<Resume> jobInSpec = filterSpecificationConverter.convert(filterBuilder.field("job")
-                .in(filterBuilder.input(arrJobIds)).get());
+        Specification<Resume> postInSpec = null;
+        if (arrPostIds != null && !arrPostIds.isEmpty()) {
+            postInSpec = filterSpecificationConverter.convert(filterBuilder.field("post")
+                .in(filterBuilder.input(arrPostIds)).get());
+        } else {
+            // Nếu không có post nào thì filter không trả về gì
+            postInSpec = filterSpecificationConverter.convert(filterBuilder.field("post").equal(filterBuilder.input(-1L)).get());
+        }
 
-        Specification<Resume> finalSpec = jobInSpec.and(spec);
+        Specification<Resume> finalSpec = postInSpec.and(spec);
 
         return ResponseEntity.ok().body(this.resumeService.fetchAllResume(finalSpec, pageable));
     }
