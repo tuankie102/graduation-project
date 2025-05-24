@@ -185,17 +185,19 @@ const LayoutAdmin = () => {
   //     })
   // }
 
+  const handleMenuClick = (e: { key: string }) => {
+    if (e.key === "logout") {
+      handleLogout();
+    }
+  };
+
   const itemsDropdown = [
     {
       label: <Link to={"/"}>Trang chủ</Link>,
       key: "home",
     },
     {
-      label: (
-        <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>
-          Đăng xuất
-        </label>
-      ),
+      label: <label style={{ cursor: "pointer" }}>Đăng xuất</label>,
       key: "logout",
     },
   ];
@@ -254,7 +256,10 @@ const LayoutAdmin = () => {
                 }}
               />
 
-              <Dropdown menu={{ items: itemsDropdown }} trigger={["click"]}>
+              <Dropdown
+                menu={{ items: itemsDropdown, onClick: handleMenuClick }}
+                trigger={["click"]}
+              >
                 <Space style={{ cursor: "pointer" }}>
                   Welcome {user?.name}
                   <Avatar>

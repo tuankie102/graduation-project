@@ -63,23 +63,24 @@ const Header = (props: any) => {
 
   const handleLogout = async () => {
     const res = await callLogout();
-    if (res && res && +res.statusCode === 200) {
+    if (res && +res.statusCode === 200) {
       dispatch(setLogoutAction({}));
       message.success("Đăng xuất thành công");
       navigate("/");
     }
   };
 
+  const handleMenuClick = (e: { key: string }) => {
+    if (e.key === "manage-account") {
+      setOpenManageAccount(true);
+    } else if (e.key === "logout") {
+      handleLogout();
+    }
+  };
+
   const itemsDropdown = [
     {
-      label: (
-        <label
-          style={{ cursor: "pointer" }}
-          onClick={() => setOpenManageAccount(true)}
-        >
-          Quản lý tài khoản
-        </label>
-      ),
+      label: "Quản lý tài khoản",
       key: "manage-account",
       icon: <ContactsOutlined />,
     },
@@ -92,13 +93,8 @@ const Header = (props: any) => {
           },
         ]
       : []),
-
     {
-      label: (
-        <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>
-          Đăng xuất
-        </label>
-      ),
+      label: "Đăng xuất",
       key: "logout",
       icon: <LogoutOutlined />,
     },
@@ -126,7 +122,6 @@ const Header = (props: any) => {
                   }}
                 >
                   <Menu
-                    // onClick={onClick}
                     selectedKeys={[current]}
                     mode="horizontal"
                     items={items}
@@ -137,14 +132,13 @@ const Header = (props: any) => {
                     <Link to={"/login"}>Đăng Nhập</Link>
                   ) : (
                     <Dropdown
-                      menu={{ items: itemsDropdown }}
+                      menu={{ items: itemsDropdown, onClick: handleMenuClick }}
                       trigger={["click"]}
                     >
                       <Space style={{ cursor: "pointer" }}>
                         <span>Welcome {user?.name}</span>
                         <Avatar>
-                          {" "}
-                          {user?.name?.substring(0, 2)?.toUpperCase()}{" "}
+                          {user?.name?.substring(0, 2)?.toUpperCase()}
                         </Avatar>
                       </Space>
                     </Dropdown>
@@ -167,7 +161,7 @@ const Header = (props: any) => {
         open={openMobileMenu}
       >
         <Menu
-          onClick={onClick}
+          onClick={handleMenuClick}
           selectedKeys={[current]}
           mode="vertical"
           items={itemsMobiles}
