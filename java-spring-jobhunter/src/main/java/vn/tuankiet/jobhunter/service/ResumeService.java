@@ -4,11 +4,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecification;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+import com.turkraft.springfilter.parser.FilterParser;
+import com.turkraft.springfilter.parser.node.FilterNode;
 
+import vn.tuankiet.jobhunter.domain.Job;
 import vn.tuankiet.jobhunter.domain.Post;
 import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.User;
@@ -16,12 +23,22 @@ import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResCreateResumeDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResFetchResumeDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResUpdateResumeDTO;
+import vn.tuankiet.jobhunter.repository.JobRepository;
 import vn.tuankiet.jobhunter.repository.PostRepository;
 import vn.tuankiet.jobhunter.repository.ResumeRepository;
 import vn.tuankiet.jobhunter.repository.UserRepository;
+import vn.tuankiet.jobhunter.util.SecurityUtil;
 
 @Service
 public class ResumeService {
+    @Autowired
+    FilterBuilder fb;
+
+    @Autowired
+    private FilterParser filterParser;
+
+    @Autowired
+    private FilterSpecificationConverter filterSpecificationConverter;
 
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
@@ -41,18 +58,17 @@ public class ResumeService {
     }
 
     public boolean checkResumeExistByUserAndPost(Resume resume) {
-
-        if (resume.getPost() == null)
-            return false;
-        Post post = resume.getPost();
+        // check user by id
         if (resume.getUser() == null)
             return false;
         Optional<User> userOptional = this.userRepository.findById(resume.getUser().getId());
         if (userOptional.isEmpty())
             return false;
 
-        // check post by id
-        Optional<Post> postOptional = this.postRepository.findById(post.getId());
+        // check job by id
+        if (resume.getPost() == null)
+            return false;
+        Optional<Post> postOptional = this.postRepository.findById(resume.getPost().getId());
         if (postOptional.isEmpty())
             return false;
 
@@ -94,16 +110,11 @@ public class ResumeService {
         res.setUpdatedBy(resume.getUpdatedBy());
 
         if (resume.getPost() != null) {
-            res.setCompanyName(resume.getPost().getJob() != null && resume.getPost().getJob().getCompany() != null
-                    ? resume.getPost().getJob().getCompany().getName()
-                    : null);
+            res.setCompanyName(resume.getPost().getJob().getCompany().getName());
         }
 
-        User user = resume.getPost() != null ? resume.getPost().getUser() : null;
-        res.setUser(new ResFetchResumeDTO.UserResume(user != null ? user.getId() : 0,
-                user != null ? user.getName() : null));
-        res.setJob(new ResFetchResumeDTO.JobResume(resume.getPost() != null ? resume.getPost().getId() : 0,
-                resume.getPost() != null ? resume.getPost().getTitle() : null));
+        res.setUser(new ResFetchResumeDTO.UserResume(resume.getUser().getId(), resume.getUser().getName()));
+        res.setPost(new ResFetchResumeDTO.PostResume(resume.getPost().getId(), resume.getPost().getTitle()));
 
         return res;
     }
@@ -131,8 +142,33 @@ public class ResumeService {
         return rs;
     }
 
-    // Public method for controller
-    public boolean checkResumeExistByPost(Resume resume) {
-        return checkResumeExistByUserAndPost(resume);
+    public ResultPaginationDTO fetchResumeByUser(Pageable pageable) {
+        // query builder
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        FilterNode node = filterParser.parse("email='" + email + "'");
+        FilterSpecification<Resume> spec = filterSpecificationConverter.convert(node);
+        Page<Resume> pageResume = this.resumeRepository.findAll(spec, pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pageResume.getTotalPages());
+        mt.setTotal(pageResume.getTotalElements());
+
+        rs.setMeta(mt);
+
+        // remove sensitive data
+        List<ResFetchResumeDTO> listResume = pageResume.getContent()
+                .stream().map(item -> this.getResume(item))
+                .collect(Collectors.toList());
+
+        rs.setResult(listResume);
+
+        return rs;
     }
 }

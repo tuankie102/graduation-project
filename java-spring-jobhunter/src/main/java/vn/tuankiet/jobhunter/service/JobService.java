@@ -73,9 +73,9 @@ public class JobService {
         dto.setCreatedAt(currentJob.getCreatedAt());
         dto.setCreatedBy(currentJob.getCreatedBy());
         dto.setCompanyName(currentJob.getCompany() != null ? currentJob.getCompany().getName() : null);
-        if (currentJob.getPosts() != null) {
-            dto.setPostIds(currentJob.getPosts().stream().map(post -> post.getId()).collect(Collectors.toList()));
-        }
+        // if (currentJob.getPosts() != null) {
+        //     dto.setPostIds(currentJob.getPosts().stream().map(post -> post.getId()).collect(Collectors.toList()));
+        // }
         if (currentJob.getSkills() != null) {
             List<String> skills = currentJob.getSkills()
                     .stream().map(item -> item.getName())

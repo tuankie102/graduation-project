@@ -26,7 +26,7 @@ public class ResFetchResumeDTO {
 
     private String companyName;
     private UserResume user;
-    private JobResume job;
+    private PostResume post;
 
     @Getter
     @Setter
@@ -39,7 +39,7 @@ public class ResFetchResumeDTO {
     @Getter
     @Setter
     @AllArgsConstructor
-    public static class JobResume {
+    public static class PostResume {
         private long id;
         private String name;
     }
