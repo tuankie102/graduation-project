@@ -12,6 +12,6 @@ import vn.tuankiet.jobhunter.domain.Skill;
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long>,
                 JpaSpecificationExecutor<Job> {
-        
+
         List<Job> findBySkillsIn(List<Skill> skills);
 }

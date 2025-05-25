@@ -57,7 +57,7 @@ public class SecurityUtil {
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
         // hardcode permission (for testing)
-        List<String> listAuthority = new ArrayList<String>();
+        List<String> listAuthority = new ArrayList<>();
 
         listAuthority.add("ROLE_USER_CREATE");
         listAuthority.add("ROLE_USER_UPDATE");
@@ -114,7 +114,7 @@ public class SecurityUtil {
                     throw e;
                 }
     }
-    
+
     /**
      * Get the login of the current user.
      *

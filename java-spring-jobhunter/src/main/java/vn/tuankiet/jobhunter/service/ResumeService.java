@@ -9,13 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 import com.turkraft.springfilter.builder.FilterBuilder;
 import com.turkraft.springfilter.converter.FilterSpecification;
 import com.turkraft.springfilter.converter.FilterSpecificationConverter;
 import com.turkraft.springfilter.parser.FilterParser;
 import com.turkraft.springfilter.parser.node.FilterNode;
 
-import vn.tuankiet.jobhunter.domain.Job;
 import vn.tuankiet.jobhunter.domain.Post;
 import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.User;
@@ -23,7 +23,6 @@ import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResCreateResumeDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResFetchResumeDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResUpdateResumeDTO;
-import vn.tuankiet.jobhunter.repository.JobRepository;
 import vn.tuankiet.jobhunter.repository.PostRepository;
 import vn.tuankiet.jobhunter.repository.ResumeRepository;
 import vn.tuankiet.jobhunter.repository.UserRepository;
@@ -59,18 +58,18 @@ public class ResumeService {
 
     public boolean checkResumeExistByUserAndPost(Resume resume) {
         // check user by id
-        if (resume.getUser() == null)
-            return false;
+        if (resume.getUser() == null) {
+			return false;
+		}
         Optional<User> userOptional = this.userRepository.findById(resume.getUser().getId());
-        if (userOptional.isEmpty())
-            return false;
-
         // check job by id
-        if (resume.getPost() == null)
-            return false;
+        if (userOptional.isEmpty() || (resume.getPost() == null)) {
+			return false;
+		}
         Optional<Post> postOptional = this.postRepository.findById(resume.getPost().getId());
-        if (postOptional.isEmpty())
-            return false;
+        if (postOptional.isEmpty()) {
+			return false;
+		}
 
         return true;
     }
@@ -145,7 +144,7 @@ public class ResumeService {
 
     public ResultPaginationDTO fetchResumeByUser(Pageable pageable) {
         // query builder
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
         FilterNode node = filterParser.parse("email='" + email + "'");

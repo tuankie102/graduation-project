@@ -1,6 +1,9 @@
 package vn.tuankiet.jobhunter.controller;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -13,24 +16,43 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.turkraft.springfilter.boot.Filter;
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+
 import jakarta.validation.Valid;
+import vn.tuankiet.jobhunter.domain.Company;
+import vn.tuankiet.jobhunter.domain.Job;
 import vn.tuankiet.jobhunter.domain.Post;
+import vn.tuankiet.jobhunter.domain.User;
+import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 import vn.tuankiet.jobhunter.domain.response.post.ResCreatePostDTO;
-import vn.tuankiet.jobhunter.domain.response.post.ResUpdatePostDTO;
 import vn.tuankiet.jobhunter.domain.response.post.ResFetchPostDTO;
+import vn.tuankiet.jobhunter.domain.response.post.ResUpdatePostDTO;
 import vn.tuankiet.jobhunter.service.PostService;
+import vn.tuankiet.jobhunter.service.UserService;
+import vn.tuankiet.jobhunter.util.SecurityUtil;
 import vn.tuankiet.jobhunter.util.annotation.ApiMessage;
 import vn.tuankiet.jobhunter.util.error.IdInvalidException;
-import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 
 @RestController
 @RequestMapping("/api/v1")
 public class PostController {
     private final PostService postService;
+    private final UserService userService;
+    private final FilterBuilder filterBuilder;
+    private final FilterSpecificationConverter filterSpecificationConverter;
 
-    public PostController(PostService postService) {
+    public PostController(
+            PostService postService,
+            UserService userService,
+            FilterBuilder filterBuilder,
+            FilterSpecificationConverter filterSpecificationConverter) {
         this.postService = postService;
+        this.userService = userService;
+        this.filterBuilder = filterBuilder;
+        this.filterSpecificationConverter = filterSpecificationConverter;
     }
 
     @PostMapping("/posts")
@@ -77,6 +99,61 @@ public class PostController {
     public ResponseEntity<ResultPaginationDTO> getAllPosts(
             @Filter Specification<Post> spec,
             Pageable pageable) {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        User currentUser = this.userService.handleGetUserByUsername(email);
+        boolean isHR = currentUser != null && currentUser.getRole() != null &&
+                      currentUser.getRole().getName().equalsIgnoreCase("HR");
+
+        if (!isHR) {
+            // Nếu không phải HR thì hiển thị tất cả
+            return ResponseEntity.ok().body(this.postService.fetchAll(spec, pageable));
+        }
+
+        // Nếu là HR thì filter theo company
+        final List<Long> arrJobIds;
+        if (currentUser != null) {
+            Company userCompany = currentUser.getCompany();
+            if (userCompany != null) {
+                List<Job> companyJobs = userCompany.getJobs();
+                if (companyJobs != null && companyJobs.size() > 0) {
+                    arrJobIds = companyJobs.stream()
+                        .map(job -> job.getId())
+                        .collect(Collectors.toList());
+                } else {
+                    arrJobIds = null;
+                }
+            } else {
+                arrJobIds = null;
+            }
+        } else {
+            arrJobIds = null;
+        }
+
+        Specification<Post> jobInSpec = null;
+        if (arrJobIds != null && !arrJobIds.isEmpty()) {
+            jobInSpec = (root, query, cb) -> {
+                return root.get("job").get("id").in(arrJobIds);
+            };
+        } else {
+            // Nếu không có job nào thì filter không trả về gì
+            jobInSpec = (root, query, cb) -> {
+                return cb.equal(root.get("job").get("id"), -1L);
+            };
+        }
+
+        Specification<Post> finalSpec = jobInSpec.and(spec);
+
+        return ResponseEntity.ok().body(this.postService.fetchAll(finalSpec, pageable));
+    }
+
+    @GetMapping("/posts/clients")
+    @ApiMessage("Get all posts for client homepage")
+    public ResponseEntity<ResultPaginationDTO> getAllPostsForClient(
+            @Filter Specification<Post> spec,
+            Pageable pageable) {
+        // Client homepage luôn hiển thị tất cả posts
         return ResponseEntity.ok().body(this.postService.fetchAll(spec, pageable));
     }
 }

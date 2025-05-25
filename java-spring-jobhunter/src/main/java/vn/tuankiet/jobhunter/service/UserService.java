@@ -19,8 +19,8 @@ import vn.tuankiet.jobhunter.domain.response.ResUpdateUserDTO;
 import vn.tuankiet.jobhunter.domain.response.ResUserDTO;
 import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 import vn.tuankiet.jobhunter.repository.PostRepository;
-import vn.tuankiet.jobhunter.repository.UserRepository;
 import vn.tuankiet.jobhunter.repository.ResumeRepository;
+import vn.tuankiet.jobhunter.repository.UserRepository;
 
 @Service
 public class UserService {

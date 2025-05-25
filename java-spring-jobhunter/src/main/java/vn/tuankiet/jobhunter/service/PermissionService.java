@@ -1,10 +1,12 @@
 package vn.tuankiet.jobhunter.service;
 
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 import vn.tuankiet.jobhunter.domain.Permission;
 import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 import vn.tuankiet.jobhunter.repository.PermissionRepository;
@@ -27,8 +29,9 @@ public class PermissionService {
 
     public Permission fetchById(long id) {
         Optional<Permission> permissionOptional = this.permissionRepository.findById(id);
-        if (permissionOptional.isPresent())
-            return permissionOptional.get();
+        if (permissionOptional.isPresent()) {
+			return permissionOptional.get();
+		}
         return null;
     }
 
@@ -80,8 +83,9 @@ public class PermissionService {
     public boolean isSameName(Permission p) {
         Permission permissionDB = this.fetchById(p.getId());
         if (permissionDB != null) {
-            if (permissionDB.getName().equals(p.getName()))
-                return true;
+            if (permissionDB.getName().equals(p.getName())) {
+				return true;
+			}
         }
         return false;
     }

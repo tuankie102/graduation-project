@@ -1,7 +1,7 @@
 package vn.tuankiet.jobhunter.service;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -9,19 +9,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import vn.tuankiet.jobhunter.domain.Job;
 import vn.tuankiet.jobhunter.domain.Post;
 import vn.tuankiet.jobhunter.domain.Resume;
-import vn.tuankiet.jobhunter.domain.Job;
 import vn.tuankiet.jobhunter.domain.User;
-
-import vn.tuankiet.jobhunter.domain.response.post.ResCreatePostDTO;
-import vn.tuankiet.jobhunter.domain.response.post.ResUpdatePostDTO;
-import vn.tuankiet.jobhunter.domain.response.post.ResFetchPostDTO;
 import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
-import vn.tuankiet.jobhunter.repository.PostRepository;
+import vn.tuankiet.jobhunter.domain.response.post.ResCreatePostDTO;
+import vn.tuankiet.jobhunter.domain.response.post.ResFetchPostDTO;
+import vn.tuankiet.jobhunter.domain.response.post.ResUpdatePostDTO;
 import vn.tuankiet.jobhunter.repository.JobRepository;
-import vn.tuankiet.jobhunter.repository.UserRepository;
+import vn.tuankiet.jobhunter.repository.PostRepository;
 import vn.tuankiet.jobhunter.repository.ResumeRepository;
+import vn.tuankiet.jobhunter.repository.UserRepository;
 
 @Service
 public class PostService {

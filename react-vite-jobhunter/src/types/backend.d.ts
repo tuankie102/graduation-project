@@ -32,6 +32,11 @@ export interface IAccount {
         module: string;
       }[];
     };
+    company?: {
+      id: string;
+      name: string;
+      logo: string;
+    };
   };
 }
 
@@ -72,10 +77,10 @@ export interface IUser {
     id: string;
     name: string;
   };
-
   company?: {
     id: string;
     name: string;
+    logo: string;
   };
   createdBy?: string;
   isDeleted?: boolean;

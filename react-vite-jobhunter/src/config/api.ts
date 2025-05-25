@@ -348,6 +348,12 @@ export const callFetchPost = (query: string) => {
   );
 };
 
+export const callFetchPostForClient = (query: string) => {
+  return axios.get<IBackendRes<IModelPaginate<IPost>>>(
+    `/api/v1/posts/clients?${query}`
+  );
+};
+
 export const callFetchPostById = (id: string) => {
   return axios.get<IBackendRes<IPost>>(`/api/v1/posts/${id}`);
 };

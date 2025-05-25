@@ -1,6 +1,7 @@
 package vn.tuankiet.jobhunter.service;
 
 import java.nio.charset.StandardCharsets;
+
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -31,7 +32,7 @@ public class EmailService {
 
     public void sendSimpleEmail() {
         SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo("ads.tuankiet@gmail.com");
+        msg.setTo("kietboi51@gmail.com");
         msg.setSubject("Testing from Spring Boot");
         msg.setText("Hello World from Spring Boot Email");
         this.mailSender.send(msg);

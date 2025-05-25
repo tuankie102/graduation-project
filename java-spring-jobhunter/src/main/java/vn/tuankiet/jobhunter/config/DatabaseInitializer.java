@@ -2,9 +2,12 @@ package vn.tuankiet.jobhunter.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import vn.tuankiet.jobhunter.domain.Permission;
 import vn.tuankiet.jobhunter.domain.Role;
 import vn.tuankiet.jobhunter.domain.User;
@@ -76,6 +79,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             arr.add(new Permission("Delete a post", "/api/v1/posts/{id}", "DELETE", "POSTS"));
             arr.add(new Permission("Get a post by id", "/api/v1/posts/{id}", "GET", "POSTS"));
             arr.add(new Permission("Get posts with pagination", "/api/v1/posts", "GET", "POSTS"));
+            arr.add(new Permission("Get posts for client with pagination", "/api/v1/posts/clients", "GET", "POSTS"));
 
             arr.add(new Permission("Create a user", "/api/v1/users", "POST", "USERS"));
             arr.add(new Permission("Update a user", "/api/v1/users", "PUT", "USERS"));
@@ -104,7 +108,22 @@ public class DatabaseInitializer implements CommandLineRunner {
             adminRole.setActive(true);
             adminRole.setPermissions(allPermissions);
 
+            // Add HR role with specific permissions
+            Role hrRole = new Role();
+            hrRole.setName("HR");
+            hrRole.setDescription("HR có permissions cho Post, Resume, and Job modules");
+            hrRole.setActive(true);
+
+            // Filter permissions for HR role
+            List<Permission> hrPermissions = allPermissions.stream()
+                .filter(p -> p.getModule().equals("POSTS") ||
+                           p.getModule().equals("RESUMES") ||
+                           p.getModule().equals("JOBS"))
+                .collect(Collectors.toList());
+            hrRole.setPermissions(hrPermissions);
+
             this.roleRepository.save(adminRole);
+            this.roleRepository.save(hrRole);
         }
 
         if (countUsers == 0) {
@@ -126,8 +145,9 @@ public class DatabaseInitializer implements CommandLineRunner {
 
         if (countPermissions > 0 && countRoles > 0 && countUsers > 0) {
             System.out.println(">>> SKIP INIT DATABASE ~ ALREADY HAVE DATA...");
-        } else
-            System.out.println(">>> END INIT DATABASE");
+        } else {
+			System.out.println(">>> END INIT DATABASE");
+		}
     }
 
 }

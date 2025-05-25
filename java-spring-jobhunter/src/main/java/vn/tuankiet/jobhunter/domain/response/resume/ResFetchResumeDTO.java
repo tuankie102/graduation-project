@@ -1,6 +1,7 @@
 package vn.tuankiet.jobhunter.domain.response.resume;
 
 import java.time.Instant;
+
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;

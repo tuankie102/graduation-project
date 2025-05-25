@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.turkraft.springfilter.boot.Filter;
+
 import jakarta.validation.Valid;
 import vn.tuankiet.jobhunter.domain.Skill;
 import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;

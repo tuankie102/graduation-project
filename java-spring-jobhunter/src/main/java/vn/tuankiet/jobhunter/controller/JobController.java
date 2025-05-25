@@ -1,6 +1,7 @@
 package vn.tuankiet.jobhunter.controller;
 
 import java.util.Optional;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -13,13 +14,20 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.turkraft.springfilter.boot.Filter;
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+
 import jakarta.validation.Valid;
 import vn.tuankiet.jobhunter.domain.Job;
+import vn.tuankiet.jobhunter.domain.User;
 import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 import vn.tuankiet.jobhunter.domain.response.job.ResCreateJobDTO;
 import vn.tuankiet.jobhunter.domain.response.job.ResUpdateJobDTO;
 import vn.tuankiet.jobhunter.service.JobService;
+import vn.tuankiet.jobhunter.service.UserService;
+import vn.tuankiet.jobhunter.util.SecurityUtil;
 import vn.tuankiet.jobhunter.util.annotation.ApiMessage;
 import vn.tuankiet.jobhunter.util.error.IdInvalidException;
 
@@ -28,9 +36,19 @@ import vn.tuankiet.jobhunter.util.error.IdInvalidException;
 public class JobController {
 
     private final JobService jobService;
+    private final UserService userService;
+    private final FilterBuilder filterBuilder;
+    private final FilterSpecificationConverter filterSpecificationConverter;
 
-    public JobController(JobService jobService) {
+    public JobController(
+            JobService jobService,
+            UserService userService,
+            FilterBuilder filterBuilder,
+            FilterSpecificationConverter filterSpecificationConverter) {
         this.jobService = jobService;
+        this.userService = userService;
+        this.filterBuilder = filterBuilder;
+        this.filterSpecificationConverter = filterSpecificationConverter;
     }
 
     @PostMapping("/jobs")
@@ -79,7 +97,30 @@ public class JobController {
     public ResponseEntity<ResultPaginationDTO> getAllJob(
             @Filter Specification<Job> spec,
             Pageable pageable) {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        User currentUser = this.userService.handleGetUserByUsername(email);
+        boolean isHR = currentUser != null && currentUser.getRole() != null &&
+                      currentUser.getRole().getName().equalsIgnoreCase("HR");
 
-        return ResponseEntity.ok().body(this.jobService.fetchAll(spec, pageable));
+        if (!isHR) {
+            // Nếu không phải HR thì hiển thị tất cả
+            return ResponseEntity.ok().body(this.jobService.fetchAll(spec, pageable));
+        }
+
+        // Nếu là HR thì filter theo company
+        Specification<Job> companySpec = null;
+        if (currentUser != null && currentUser.getCompany() != null) {
+            companySpec = filterSpecificationConverter.convert(filterBuilder.field("company")
+                .equal(filterBuilder.input(currentUser.getCompany().getId())).get());
+        } else {
+            // Nếu không có company thì filter không trả về gì
+            companySpec = filterSpecificationConverter.convert(filterBuilder.field("id").equal(filterBuilder.input(-1L)).get());
+        }
+
+        Specification<Job> finalSpec = companySpec.and(spec);
+
+        return ResponseEntity.ok().body(this.jobService.fetchAll(finalSpec, pageable));
     }
 }

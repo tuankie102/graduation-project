@@ -29,7 +29,7 @@ public class SubscriberController {
     public ResponseEntity<Subscriber> create(@Valid @RequestBody Subscriber sub) throws IdInvalidException {
         // check email
         boolean isExist = this.subscriberService.isExistsByEmail(sub.getEmail());
-        if (isExist == true) {
+        if (isExist) {
             throw new IdInvalidException("Email " + sub.getEmail() + " đã tồn tại");
         }
 
@@ -50,7 +50,7 @@ public class SubscriberController {
     @PostMapping("/subscribers/skills")
     @ApiMessage("Get subscriber's skill")
     public ResponseEntity<Subscriber> getSubscribersSkill() throws IdInvalidException {
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
 

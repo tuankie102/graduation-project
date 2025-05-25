@@ -25,8 +25,9 @@ public class SkillService {
 
     public Skill fetchSkillById(long id) {
         Optional<Skill> skillOptional = this.skillRepository.findById(id);
-        if (skillOptional.isPresent())
-            return skillOptional.get();
+        if (skillOptional.isPresent()) {
+			return skillOptional.get();
+		}
         return null;
     }
 

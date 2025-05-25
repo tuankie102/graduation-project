@@ -3,19 +3,24 @@ package vn.tuankiet.jobhunter.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.turkraft.springfilter.boot.Filter;
 import com.turkraft.springfilter.builder.FilterBuilder;
 import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+
 import jakarta.validation.Valid;
 import vn.tuankiet.jobhunter.domain.Company;
 import vn.tuankiet.jobhunter.domain.Job;
@@ -30,8 +35,6 @@ import vn.tuankiet.jobhunter.service.UserService;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
 import vn.tuankiet.jobhunter.util.annotation.ApiMessage;
 import vn.tuankiet.jobhunter.util.error.IdInvalidException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -110,8 +113,8 @@ public class ResumeController {
     public ResponseEntity<ResultPaginationDTO> fetchAll(
             @Filter Specification<Resume> spec,
             Pageable pageable) {
-        List<Long> arrPostIds = null;
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        final List<Long> arrPostIds;
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
         User currentUser = this.userService.handleGetUserByUsername(email);
@@ -129,17 +132,26 @@ public class ResumeController {
                         .flatMap(job -> job.getPosts() != null ? job.getPosts().stream() : java.util.stream.Stream.empty())
                         .map(post -> post.getId())
                         .collect(Collectors.toList());
+                } else {
+                    arrPostIds = null;
                 }
+            } else {
+                arrPostIds = null;
             }
+        } else {
+            arrPostIds = null;
         }
 
         Specification<Resume> postInSpec = null;
         if (arrPostIds != null && !arrPostIds.isEmpty()) {
-            postInSpec = filterSpecificationConverter.convert(filterBuilder.field("post")
-                .in(filterBuilder.input(arrPostIds)).get());
+            postInSpec = (root, query, cb) -> {
+                return root.get("post").get("id").in(arrPostIds);
+            };
         } else {
             // Nếu không có post nào thì filter không trả về gì
-            postInSpec = filterSpecificationConverter.convert(filterBuilder.field("post").equal(filterBuilder.input(-1L)).get());
+            postInSpec = (root, query, cb) -> {
+                return cb.equal(root.get("post").get("id"), -1L);
+            };
         }
 
         Specification<Resume> finalSpec = postInSpec.and(spec);

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import vn.tuankiet.jobhunter.domain.Job;
@@ -72,8 +71,9 @@ public class SubscriberService {
 
     public Subscriber findById(long id) {
         Optional<Subscriber> subsOptional = this.subscriberRepository.findById(id);
-        if (subsOptional.isPresent())
-            return subsOptional.get();
+        if (subsOptional.isPresent()) {
+			return subsOptional.get();
+		}
         return null;
     }
 
