@@ -13,6 +13,7 @@ public class ResEmailResume {
     private String status;
     private String email;
     private String message;
+    private String attachmentUrl;
 
     @Getter
     @Setter

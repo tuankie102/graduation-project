@@ -1,4 +1,4 @@
-import { callUpdateResumeStatus } from "@/config/api";
+import { callUpdateResumeStatus, callUploadSingleFile } from "@/config/api";
 import { IResume } from "@/types/backend";
 import {
   Badge,
@@ -7,9 +7,12 @@ import {
   Drawer,
   Form,
   Select,
+  Upload,
   message,
   notification,
 } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import type { UploadProps } from "antd";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
@@ -26,6 +29,8 @@ interface IProps {
 const ViewDetailResume = (props: IProps) => {
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
   const [value, setValue] = useState("");
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [attachmentUrl, setAttachmentUrl] = useState<string>("");
   const { onClose, open, dataInit, setDataInit, reloadTable } = props;
   const [form] = Form.useForm();
 
@@ -36,7 +41,8 @@ const ViewDetailResume = (props: IProps) => {
       const res = await callUpdateResumeStatus(
         dataInit?.id,
         values.status,
-        values.message
+        values.message,
+        attachmentUrl
       );
       if (res.data) {
         message.success("Update Resume status thành công!");
@@ -55,12 +61,48 @@ const ViewDetailResume = (props: IProps) => {
     setIsSubmit(false);
   };
 
+  const propsUpload: UploadProps = {
+    maxCount: 1,
+    multiple: false,
+    accept: "application/pdf,application/msword, .doc, .docx, .pdf",
+    async customRequest({ file, onSuccess, onError }: any) {
+      const res = await callUploadSingleFile(file, "resume");
+      if (res && res.data) {
+        setAttachmentUrl(res.data.fileName);
+        if (onSuccess) onSuccess("ok");
+      } else {
+        if (onError) {
+          setAttachmentUrl("");
+          const error = new Error(res.message);
+          onError({ event: error });
+        }
+      }
+    },
+    onChange(info) {
+      setFileList(info.fileList);
+      if (info.file.status === "done") {
+        message.success(`${info.file.name} file uploaded successfully`);
+      } else if (info.file.status === "error") {
+        message.error(
+          info?.file?.error?.event?.message ??
+            "Đã có lỗi xảy ra khi upload file."
+        );
+      }
+    },
+  };
+
   useEffect(() => {
     if (dataInit) {
       form.setFieldValue("status", dataInit.status);
       form.setFieldValue("message", "");
+      setFileList([]);
+      setAttachmentUrl("");
     }
-    return () => form.resetFields();
+    return () => {
+      form.resetFields();
+      setFileList([]);
+      setAttachmentUrl("");
+    };
   }, [dataInit]);
 
   return (
@@ -120,14 +162,19 @@ const ViewDetailResume = (props: IProps) => {
               : ""}
           </Descriptions.Item>
         </Descriptions>
-
         <Form form={form} layout="vertical">
           <Form.Item
             name="message"
             label="Lời nhắn cho ứng viên"
-            rules={[{ required: false, message: "Vui lòng nhập lời nhắn!" }]}
+            rules={[{ required: true, message: "Vui lòng nhập lời nhắn!" }]}
           >
             <ReactQuill theme="snow" value={value} onChange={setValue} />
+          </Form.Item>
+
+          <Form.Item label="File đính kèm (tùy chọn)">
+            <Upload {...propsUpload} fileList={fileList}>
+              <Button icon={<UploadOutlined />}>Upload File</Button>
+            </Upload>
           </Form.Item>
         </Form>
       </Drawer>

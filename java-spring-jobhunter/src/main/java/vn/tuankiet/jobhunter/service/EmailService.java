@@ -1,6 +1,10 @@
 package vn.tuankiet.jobhunter.service;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
@@ -11,6 +15,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+
+import vn.tuankiet.jobhunter.domain.response.email.ResEmailResume;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -53,20 +61,50 @@ public class EmailService {
     }
 
     @Async
-    public void sendEmailFromTemplateSync(
-            String to,
-            String subject,
-            String templateName,
-            String username,
-            String valueName,
-            Object value) {
+    public void sendEmailFromTemplateSync(String to, String subject, String templateName, String name, String objectName, Object value) {
+        try {
+            Context context = new Context();
+            context.setVariable("name", name);
+            context.setVariable(objectName, value);
 
-        Context context = new Context();
-        context.setVariable("name", username);
-        context.setVariable(valueName, value);
+            String htmlContent = templateEngine.process(templateName, context);
 
-        String content = templateEngine.process(templateName, context);
-        this.sendEmailSync(to, subject, content, false, true);
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            // Handle attachment if exists
+            if (value instanceof ResEmailResume) {
+                ResEmailResume resume = (ResEmailResume) value;
+                if (resume.getAttachmentUrl() != null && !resume.getAttachmentUrl().isEmpty()) {
+                    try {
+                        // Get current path and add storage/resume
+                        String currentPath = System.getProperty("user.dir");
+                        String filePath = currentPath + "/upload/resume/" + resume.getAttachmentUrl();
+                        System.out.println("Looking for file: " + filePath);
+                        FileSystemResource res = new FileSystemResource(new File(filePath));
+
+                        // Read file as byte array
+                        // Path path = Paths.get(filePath);
+                        // byte[] content = Files.readAllBytes(path);
+                        
+                        // Add attachment
+                        helper.addAttachment(resume.getAttachmentUrl(), res);
+                        System.out.println("File attached successfully");
+                    } catch (Exception e) {
+                        System.out.println("Error adding attachment: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            System.out.println("Error sending email: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }

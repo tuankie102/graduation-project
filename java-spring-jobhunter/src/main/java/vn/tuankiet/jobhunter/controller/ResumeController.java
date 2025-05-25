@@ -85,6 +85,8 @@ public class ResumeController {
 
         Resume reqResume = reqResumeOptional.get();
         reqResume.setStatus(resume.getStatus());
+        reqResume.setMessage(resume.getMessage());
+        reqResume.setAttachmentUrl(resume.getAttachmentUrl());
 
         //send email
         ResEmailResume resEmailResume = this.resumeService.convertResumeToSendEmail(reqResume, resume.getMessage());

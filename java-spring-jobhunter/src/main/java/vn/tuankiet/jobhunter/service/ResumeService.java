@@ -184,6 +184,9 @@ public class ResumeService {
         if (message != null && !message.trim().isEmpty()) {
             res.setMessage(message);
         }
+        if (resume.getAttachmentUrl() != null && !resume.getAttachmentUrl().trim().isEmpty()) {
+            res.setAttachmentUrl(resume.getAttachmentUrl());
+        }
         return res;
     }
 }

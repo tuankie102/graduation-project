@@ -63,6 +63,9 @@ public class Resume {
     @Transient
     private String message;
 
+    @Transient
+    private String attachmentUrl;
+
     @PrePersist
     public void handleBeforeCreate() {
         this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent()

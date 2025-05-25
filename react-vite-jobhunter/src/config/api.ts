@@ -214,14 +214,16 @@ export const callCreateResume = (
 };
 
 export const callUpdateResumeStatus = async (
-  id: string,
+  id: number,
   status: string,
-  message: string
+  message: string,
+  attachmentUrl?: string
 ) => {
   const res = await axios.put<IBackendRes<IResume>>(`/api/v1/resumes`, {
     id,
     status,
     message,
+    attachmentUrl,
   });
   return res;
 };
