@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.tuankiet.jobhunter.domain.Company;
 import vn.tuankiet.jobhunter.domain.Job;
+import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.Skill;
 import vn.tuankiet.jobhunter.domain.response.email.ResEmailJob;
 import vn.tuankiet.jobhunter.service.EmailService;
@@ -84,8 +87,27 @@ public class EmailController {
             job -> this.subscriberService.convertJobToSendEmail(job)).collect(Collectors.toList());
 
         //send email with list jobs
-        this.emailService.sendEmailFromTemplateSync("kietboi51@gmail.com", "test send email", "job", "kiet", resEmailJobs);
+        this.emailService.sendEmailFromTemplateSync("kietboi51@gmail.com", "test send email", "job", "kiet", "jobs", resEmailJobs);
         return "ok";
+    }
+
+    @PostMapping("/email/resume-status")
+    @ApiMessage("Send resume status notification email")
+    public String sendResumeStatusEmail(@RequestBody Resume resume) {
+        if (resume.getUser() == null || resume.getUser().getEmail() == null) {
+            return "User email not found";
+        }
+
+        String subject = "Your Resume Status Update - " + resume.getPost().getJob().getName();
+        this.emailService.sendEmailFromTemplateSync(
+            resume.getUser().getEmail(),
+            subject,
+            "resume",
+            resume.getUser().getName(),
+            "resume",
+            resume
+        );
+        return "Email sent successfully";
     }
 
     private Skill createSkill(String name) {

@@ -20,6 +20,7 @@ import vn.tuankiet.jobhunter.domain.Post;
 import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.User;
 import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
+import vn.tuankiet.jobhunter.domain.response.email.ResEmailResume;
 import vn.tuankiet.jobhunter.domain.response.resume.ResCreateResumeDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResFetchResumeDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResUpdateResumeDTO;
@@ -170,5 +171,14 @@ public class ResumeService {
         rs.setResult(listResume);
 
         return rs;
+    }
+
+    public ResEmailResume convertResumeToSendEmail(Resume resume, String message) {
+        ResEmailResume res = new ResEmailResume();
+        res.setJob(new ResEmailResume.JobEmail(resume.getPost().getJob().getName(), new ResEmailResume.CompanyEmail(resume.getPost().getJob().getCompany().getName())));
+        res.setStatus(resume.getStatus().toString());
+        res.setEmail(resume.getUser().getEmail());
+        res.setMessage(message);
+        return res;
     }
 }

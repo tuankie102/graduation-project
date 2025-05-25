@@ -7,9 +7,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import vn.tuankiet.jobhunter.domain.Job;
+import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.Skill;
 import vn.tuankiet.jobhunter.domain.Subscriber;
 import vn.tuankiet.jobhunter.domain.response.email.ResEmailJob;
+import vn.tuankiet.jobhunter.domain.response.email.ResEmailResume;
 import vn.tuankiet.jobhunter.repository.JobRepository;
 import vn.tuankiet.jobhunter.repository.SkillRepository;
 import vn.tuankiet.jobhunter.repository.SubscriberRepository;
@@ -106,6 +108,7 @@ public class SubscriberService {
                                 "Cơ hội việc làm hot đang chờ đón bạn, khám phá ngay",
                                 "job",
                                 sub.getName(),
+                                "jobs",
                                 arr);
                     }
                 }

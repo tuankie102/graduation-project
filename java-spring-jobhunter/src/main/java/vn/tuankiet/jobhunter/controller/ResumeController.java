@@ -27,9 +27,11 @@ import vn.tuankiet.jobhunter.domain.Job;
 import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.User;
 import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
+import vn.tuankiet.jobhunter.domain.response.email.ResEmailResume;
 import vn.tuankiet.jobhunter.domain.response.resume.ResCreateResumeDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResFetchResumeDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResUpdateResumeDTO;
+import vn.tuankiet.jobhunter.service.EmailService;
 import vn.tuankiet.jobhunter.service.ResumeService;
 import vn.tuankiet.jobhunter.service.UserService;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
@@ -42,17 +44,19 @@ public class ResumeController {
 
     private final ResumeService resumeService;
     private final UserService userService;
-
+    private final EmailService emailService;
     private final FilterBuilder filterBuilder;
     private final FilterSpecificationConverter filterSpecificationConverter;
 
     public ResumeController(
             ResumeService resumeService,
             UserService userService,
+            EmailService emailService,
             FilterBuilder filterBuilder,
             FilterSpecificationConverter filterSpecificationConverter) {
         this.resumeService = resumeService;
         this.userService = userService;
+        this.emailService = emailService;
         this.filterBuilder = filterBuilder;
         this.filterSpecificationConverter = filterSpecificationConverter;
     }
@@ -81,6 +85,18 @@ public class ResumeController {
 
         Resume reqResume = reqResumeOptional.get();
         reqResume.setStatus(resume.getStatus());
+
+        //send email
+        String message = "just a message";
+        ResEmailResume resEmailResume = this.resumeService.convertResumeToSendEmail(reqResume, message);
+        this.emailService.sendEmailFromTemplateSync(
+        resEmailResume.getEmail(),
+        "Your Resume Status Update - " + reqResume.getPost().getJob().getName(),
+        "resume",
+        reqResume.getUser().getName(),
+        "resume",
+        resEmailResume
+        );
 
         return ResponseEntity.ok().body(this.resumeService.update(reqResume));
     }

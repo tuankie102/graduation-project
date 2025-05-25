@@ -58,11 +58,12 @@ public class EmailService {
             String subject,
             String templateName,
             String username,
+            String valueName,
             Object value) {
 
         Context context = new Context();
         context.setVariable("name", username);
-        context.setVariable("jobs", value);
+        context.setVariable(valueName, value);
 
         String content = templateEngine.process(templateName, context);
         this.sendEmailSync(to, subject, content, false, true);
