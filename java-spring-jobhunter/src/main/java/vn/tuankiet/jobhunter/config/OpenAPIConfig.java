@@ -31,7 +31,7 @@ public class OpenAPIConfig {
 
     private Contact createContact() {
         return new Contact()
-                .email("ads.tuankiet@gmail.com")
+                .email("kietboi50@gmail.com")
                 .name("Tuan Kiet")
                 .url("https://tuankiet.vn");
     }
@@ -48,7 +48,7 @@ public class OpenAPIConfig {
                 .version("1.0")
                 .contact(createContact())
                 .description("This API exposes all endpoints (job hunter)")
-                .termsOfService("https://tuankiet.vn/donate")
+                .termsOfService("https://tuankiet.vn")
                 .license(createLicense());
     }
 
