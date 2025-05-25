@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.tuankiet.jobhunter.domain.Post;
+import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.Job;
 import vn.tuankiet.jobhunter.domain.User;
 
@@ -20,17 +21,19 @@ import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 import vn.tuankiet.jobhunter.repository.PostRepository;
 import vn.tuankiet.jobhunter.repository.JobRepository;
 import vn.tuankiet.jobhunter.repository.UserRepository;
+import vn.tuankiet.jobhunter.repository.ResumeRepository;
 
 @Service
 public class PostService {
     private final PostRepository postRepository;
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
-
-    public PostService(PostRepository postRepository, JobRepository jobRepository, UserRepository userRepository) {
+    private final ResumeRepository resumeRepository;
+    public PostService(PostRepository postRepository, JobRepository jobRepository, UserRepository userRepository, ResumeRepository resumeRepository) {
         this.postRepository = postRepository;
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
+        this.resumeRepository = resumeRepository;
     }
 
     public Optional<Post> fetchPostById(long id) {
@@ -117,7 +120,15 @@ public class PostService {
     }
 
     public void delete(long id) {
-        this.postRepository.deleteById(id);
+        Optional<Post> postOptional = this.postRepository.findById(id);
+        if (postOptional.isPresent()) {
+            Post post = postOptional.get();
+            if (post.getResumes() != null) {
+                List<Resume> resumes = post.getResumes();
+                this.resumeRepository.deleteAll(resumes);
+            }
+            this.postRepository.delete(post);
+        }
     }
 
     public ResFetchPostDTO getPost(Post post) {

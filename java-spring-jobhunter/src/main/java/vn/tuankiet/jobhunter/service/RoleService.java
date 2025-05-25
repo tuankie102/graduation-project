@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.tuankiet.jobhunter.domain.Permission;
 import vn.tuankiet.jobhunter.domain.Role;
+import vn.tuankiet.jobhunter.domain.User;
 import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 import vn.tuankiet.jobhunter.repository.PermissionRepository;
 import vn.tuankiet.jobhunter.repository.RoleRepository;
@@ -72,7 +73,24 @@ public class RoleService {
     }
 
     public void delete(long id) {
-        this.roleRepository.deleteById(id);
+        Optional<Role> roleOptional = this.roleRepository.findById(id);
+        if (roleOptional.isPresent()) {
+            Role currentRole = roleOptional.get();
+            
+            // Check if role has users
+            if (currentRole.getUsers() != null && !currentRole.getUsers().isEmpty()) {
+                currentRole.getUsers().forEach(user -> user.setRole(null));
+            }
+            
+            // Remove role from permissions
+            // if (role.getPermissions() != null) {
+            //     role.getPermissions().forEach(permission -> 
+            //         permission.getRoles().remove(role)
+            //     );
+            // }
+            
+            this.roleRepository.delete(currentRole);
+        }
     }
 
     public ResultPaginationDTO getRoles(Specification<Role> spec, Pageable pageable) {

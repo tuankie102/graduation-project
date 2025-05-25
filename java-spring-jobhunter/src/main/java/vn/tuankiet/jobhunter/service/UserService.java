@@ -10,13 +10,17 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.tuankiet.jobhunter.domain.Company;
+import vn.tuankiet.jobhunter.domain.Post;
+import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.Role;
 import vn.tuankiet.jobhunter.domain.User;
 import vn.tuankiet.jobhunter.domain.response.ResCreateUserDTO;
 import vn.tuankiet.jobhunter.domain.response.ResUpdateUserDTO;
 import vn.tuankiet.jobhunter.domain.response.ResUserDTO;
 import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
+import vn.tuankiet.jobhunter.repository.PostRepository;
 import vn.tuankiet.jobhunter.repository.UserRepository;
+import vn.tuankiet.jobhunter.repository.ResumeRepository;
 
 @Service
 public class UserService {
@@ -24,13 +28,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final CompanyService companyService;
     private final RoleService roleService;
-
+    private final PostRepository postRepository;
+    private final ResumeRepository resumeRepository;
     public UserService(UserRepository userRepository,
             CompanyService companyService,
-            RoleService roleService) {
+            RoleService roleService,
+            PostRepository postRepository,
+            ResumeRepository resumeRepository) {
         this.userRepository = userRepository;
         this.companyService = companyService;
         this.roleService = roleService;
+        this.postRepository = postRepository;
+        this.resumeRepository = resumeRepository;
     }
 
     public User handleCreateUser(User user) {
@@ -50,7 +59,21 @@ public class UserService {
     }
 
     public void handleDeleteUser(long id) {
-        this.userRepository.deleteById(id);
+        Optional<User> userOptional = this.userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            // Delete all posts associated with this user
+            if (user.getPosts() != null) {
+                List<Post> posts = user.getPosts();
+                this.postRepository.deleteAll(posts);
+            }
+            // Delete all resumes associated with this user
+            if (user.getResumes() != null) {
+                List<Resume> resumes = user.getResumes();
+                this.resumeRepository.deleteAll(resumes);
+            }
+            this.userRepository.delete(user);
+        }
     }
 
     public User fetchUserById(long id) {
