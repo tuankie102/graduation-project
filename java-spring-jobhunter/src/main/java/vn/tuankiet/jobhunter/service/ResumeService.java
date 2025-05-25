@@ -175,10 +175,15 @@ public class ResumeService {
 
     public ResEmailResume convertResumeToSendEmail(Resume resume, String message) {
         ResEmailResume res = new ResEmailResume();
-        res.setJob(new ResEmailResume.JobEmail(resume.getPost().getJob().getName(), new ResEmailResume.CompanyEmail(resume.getPost().getJob().getCompany().getName())));
+        res.setJob(new ResEmailResume.JobEmail(
+            resume.getPost().getJob().getName(),
+            new ResEmailResume.CompanyEmail(resume.getPost().getJob().getCompany().getName())
+        ));
         res.setStatus(resume.getStatus().toString());
         res.setEmail(resume.getUser().getEmail());
-        res.setMessage(message);
+        if (message != null && !message.trim().isEmpty()) {
+            res.setMessage(message);
+        }
         return res;
     }
 }

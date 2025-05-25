@@ -87,15 +87,14 @@ public class ResumeController {
         reqResume.setStatus(resume.getStatus());
 
         //send email
-        String message = "just a message";
-        ResEmailResume resEmailResume = this.resumeService.convertResumeToSendEmail(reqResume, message);
+        ResEmailResume resEmailResume = this.resumeService.convertResumeToSendEmail(reqResume, resume.getMessage());
         this.emailService.sendEmailFromTemplateSync(
-        resEmailResume.getEmail(),
-        "Your Resume Status Update - " + reqResume.getPost().getJob().getName(),
-        "resume",
-        reqResume.getUser().getName(),
-        "resume",
-        resEmailResume
+            resEmailResume.getEmail(),
+            "Your Resume Status Update - " + reqResume.getPost().getJob().getName(),
+            "resume",
+            reqResume.getUser().getName(),
+            "resume",
+            resEmailResume
         );
 
         return ResponseEntity.ok().body(this.resumeService.update(reqResume));

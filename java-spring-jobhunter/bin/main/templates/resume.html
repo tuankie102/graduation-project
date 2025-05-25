@@ -88,10 +88,10 @@
                       </div>
                       <div
                         style="font-size: 16px"
-                        th:if="${resume.message != null}"
+                        th:if="${resume.message != null && !resume.message.isEmpty()}"
                       >
                         <strong>Message:</strong>
-                        <span th:text="${resume.message}"></span>
+                        <div th:utext="${resume.message}"></div>
                       </div>
                       <div
                         style="

@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
 import vn.tuankiet.jobhunter.util.constant.ResumeStateEnum;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "HOSOXINVIEC")
@@ -58,6 +59,9 @@ public class Resume {
     @ManyToOne
     @JoinColumn(name = "maBaiDang")
     private Post post;
+
+    @Transient
+    private String message;
 
     @PrePersist
     public void handleBeforeCreate() {

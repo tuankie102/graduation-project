@@ -213,8 +213,17 @@ export const callCreateResume = (
   });
 };
 
-export const callUpdateResumeStatus = (id: any, status: string) => {
-  return axios.put<IBackendRes<IResume>>(`/api/v1/resumes`, { id, status });
+export const callUpdateResumeStatus = async (
+  id: string,
+  status: string,
+  message: string
+) => {
+  const res = await axios.put<IBackendRes<IResume>>(`/api/v1/resumes`, {
+    id,
+    status,
+    message,
+  });
+  return res;
 };
 
 export const callDeleteResume = (id: string) => {

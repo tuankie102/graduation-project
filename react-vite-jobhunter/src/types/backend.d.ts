@@ -119,6 +119,8 @@ export interface IResume {
   email: string;
   url: string;
   status: string;
+  companyName?: string;
+  jobName?: string;
   user?: {
     id: string | number;
   };
