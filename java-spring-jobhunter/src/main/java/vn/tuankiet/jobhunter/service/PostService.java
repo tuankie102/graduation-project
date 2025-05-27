@@ -21,6 +21,7 @@ import vn.tuankiet.jobhunter.repository.JobRepository;
 import vn.tuankiet.jobhunter.repository.PostRepository;
 import vn.tuankiet.jobhunter.repository.ResumeRepository;
 import vn.tuankiet.jobhunter.repository.UserRepository;
+import vn.tuankiet.jobhunter.service.SubscriberService;
 
 @Service
 public class PostService {
@@ -28,11 +29,14 @@ public class PostService {
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
-    public PostService(PostRepository postRepository, JobRepository jobRepository, UserRepository userRepository, ResumeRepository resumeRepository) {
+    private final SubscriberService subscriberService;
+
+    public PostService(PostRepository postRepository, JobRepository jobRepository, UserRepository userRepository, ResumeRepository resumeRepository, SubscriberService subscriberService) {
         this.postRepository = postRepository;
         this.jobRepository = jobRepository;
         this.userRepository = userRepository;
         this.resumeRepository = resumeRepository;
+        this.subscriberService = subscriberService;
     }
 
     public Optional<Post> fetchPostById(long id) {
@@ -51,6 +55,9 @@ public class PostService {
             post.setUser(userOptional.orElse(null));
         }
         Post currentPost = this.postRepository.save(post);
+
+        // Send email to matching subscribers
+        subscriberService.sendEmailForNewPost(currentPost);
 
         ResCreatePostDTO dto = new ResCreatePostDTO();
         dto.setId(currentPost.getId());

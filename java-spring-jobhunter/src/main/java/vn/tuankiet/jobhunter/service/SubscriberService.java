@@ -3,6 +3,7 @@ package vn.tuankiet.jobhunter.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import vn.tuankiet.jobhunter.domain.Job;
 import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.Skill;
 import vn.tuankiet.jobhunter.domain.Subscriber;
+import vn.tuankiet.jobhunter.domain.Post;
 import vn.tuankiet.jobhunter.domain.response.email.ResEmailJob;
 import vn.tuankiet.jobhunter.domain.response.email.ResEmailResume;
 import vn.tuankiet.jobhunter.repository.JobRepository;
@@ -94,6 +96,7 @@ public class SubscriberService {
     public void sendSubscribersEmailJobs() {
         List<Subscriber> listSubs = this.subscriberRepository.findAll();
         if (listSubs != null && listSubs.size() > 0) {
+            
             for (Subscriber sub : listSubs) {
                 List<Skill> listSkills = sub.getSkills();
                 if (listSkills != null && listSkills.size() > 0) {
@@ -117,6 +120,28 @@ public class SubscriberService {
     }
 
     public Subscriber findByEmail(String email) {
-        return this.subscriberRepository.findByEmail(email);
+        return this.subscriberRepository.findByEmail(email).get();
+    }
+
+    public void sendEmailForNewPost(Post post) {
+        if (post != null && post.getJob() != null) {
+            List<Skill> jobSkills = post.getJob().getSkills();
+            if (jobSkills != null && !jobSkills.isEmpty()) {
+                // Find subscribers who have matching skills
+                List<Subscriber> matchingSubscribers = this.subscriberRepository.findBySkillsIn(jobSkills);
+                
+                if (matchingSubscribers != null && !matchingSubscribers.isEmpty()) {
+                    for (Subscriber sub : matchingSubscribers) {
+                        this.emailService.sendEmailFromTemplateSync(
+                        sub.getEmail(),
+                        "Một trong những job bạn đăng ký vừa tuyển dụng",
+                            "job",
+                            sub.getName(),
+                            "jobs",
+                            this.convertJobToSendEmail(post.getJob()));
+                    }
+                }
+            }
+        }
     }
 }

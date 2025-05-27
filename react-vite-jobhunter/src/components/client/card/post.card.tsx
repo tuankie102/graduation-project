@@ -117,51 +117,55 @@ const PostCard = (props: IProps) => {
 
             {displayPost?.map((item) => {
               return (
-                <Col span={24} md={12} key={item.id}>
-                  <Card
-                    size="small"
-                    title={null}
-                    hoverable
-                    onClick={() => handleViewDetailPost(item)}
-                  >
-                    <div className={styles["card-job-content"]}>
-                      <div className={styles["card-job-left"]}>
-                        <img
-                          alt="example"
-                          src={`${
-                            import.meta.env.VITE_BACKEND_URL
-                          }/storage/company/${item?.job?.company?.logo}`}
-                        />
+                item.active && (
+                  <Col span={24} md={12} key={item.id}>
+                    <Card
+                      size="small"
+                      title={null}
+                      hoverable
+                      onClick={() => handleViewDetailPost(item)}
+                    >
+                      <div className={styles["card-job-content"]}>
+                        <div className={styles["card-job-left"]}>
+                          <img
+                            alt="example"
+                            src={`${
+                              import.meta.env.VITE_BACKEND_URL
+                            }/storage/company/${item?.job?.company?.logo}`}
+                          />
+                        </div>
+                        <div className={styles["card-job-right"]}>
+                          <div className={styles["job-title"]}>
+                            {item.title}
+                          </div>
+                          <div className={styles["job-location"]}>
+                            <EnvironmentOutlined style={{ color: "#58aaab" }} />
+                            &nbsp;{getLocationName(item.job?.location || "")}
+                          </div>
+                          <div>
+                            <ThunderboltOutlined style={{ color: "orange" }} />
+                            &nbsp;
+                            {(item.job?.salary + "")?.replace(
+                              /\B(?=(\d{3})+(?!\d))/g,
+                              ","
+                            )}{" "}
+                            đ
+                          </div>
+                          <div className={styles["job-updatedAt"]}>
+                            {item.createdAt
+                              ? dayjs(item.createdAt).locale("en").fromNow()
+                              : dayjs(item.createdAt).locale("en").fromNow()}
+                          </div>
+                          <br />
+                          <div className={styles["job-updatedAt"]}>
+                            <UserOutlined />
+                            &nbsp;{item.job?.user?.name || "Unknown"}
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles["card-job-right"]}>
-                        <div className={styles["job-title"]}>{item.title}</div>
-                        <div className={styles["job-location"]}>
-                          <EnvironmentOutlined style={{ color: "#58aaab" }} />
-                          &nbsp;{getLocationName(item.job?.location || "")}
-                        </div>
-                        <div>
-                          <ThunderboltOutlined style={{ color: "orange" }} />
-                          &nbsp;
-                          {(item.job?.salary + "")?.replace(
-                            /\B(?=(\d{3})+(?!\d))/g,
-                            ","
-                          )}{" "}
-                          đ
-                        </div>
-                        <div className={styles["job-updatedAt"]}>
-                          {item.createdAt
-                            ? dayjs(item.createdAt).locale("en").fromNow()
-                            : dayjs(item.createdAt).locale("en").fromNow()}
-                        </div>
-                        <br />
-                        <div className={styles["job-updatedAt"]}>
-                          <UserOutlined />
-                          &nbsp;{item.job?.user?.name || "Unknown"}
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </Col>
+                    </Card>
+                  </Col>
+                )
               );
             })}
 

@@ -10,6 +10,8 @@ import {
   EnvironmentOutlined,
   HistoryOutlined,
   UserOutlined,
+  TeamOutlined,
+  RiseOutlined,
 } from "@ant-design/icons";
 import { getLocationName } from "@/config/utils";
 import dayjs from "dayjs";
@@ -56,10 +58,13 @@ const ClientPostDetailPage = (props: any) => {
                     onClick={() => setIsModalOpen(true)}
                     className={styles["btn-apply"]}
                   >
-                    Rải CV
+                    Ứng tuyển
                   </button>
                 </div>
                 <Divider />
+                <div className={styles["header"]}>
+                  <h2>{postDetail.job?.name}</h2>
+                </div>
                 <div className={styles["skills"]}>
                   {postDetail?.job?.skills?.map((item, index) => {
                     return (
@@ -81,6 +86,14 @@ const ClientPostDetailPage = (props: any) => {
                   </span>
                 </div>
                 <div className={styles["location"]}>
+                  <TeamOutlined />
+                  <span>&nbsp;{postDetail.job?.quantity || 1} người</span>
+                </div>
+                <div className={styles["location"]}>
+                  <RiseOutlined style={{ color: "#1890ff" }} />
+                  <span>&nbsp;{postDetail.job?.level || "Trung bình"}</span>
+                </div>
+                <div className={styles["location"]}>
                   <EnvironmentOutlined style={{ color: "#58aaab" }} />
                   &nbsp;{getLocationName(postDetail.job?.location || "")}
                 </div>
@@ -95,6 +108,10 @@ const ClientPostDetailPage = (props: any) => {
                 <div className={styles["salary"]}>
                   <UserOutlined />
                   &nbsp;{postDetail.job?.user?.name || "Unknown"}
+                </div>
+                <div className={styles["job-description"]}>
+                  <h4>Mô tả công việc:</h4>
+                  {parse(postDetail.job?.description || "")}
                 </div>
                 <Divider />
                 {parse(postDetail.content)}
