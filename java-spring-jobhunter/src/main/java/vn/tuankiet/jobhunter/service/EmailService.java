@@ -100,11 +100,35 @@ public class EmailService {
                     }
                 }
             }
+            System.out.println("Sending email to " + to + " with subject " + subject);
             javaMailSender.send(message);
+            System.out.println("Email sent successfully to " + to);
         } catch (Exception e) {
             System.out.println("Error sending email: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
+    // public void sendVerificationCode(String toEmail, String code) {
+    //     try {
+    //         Context context = new Context();
+    //         context.setVariable("code", code);
+
+    //         String htmlContent = templateEngine.process("verification-code", context);
+
+    //         MimeMessage message = javaMailSender.createMimeMessage();
+    //         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+    //         helper.setTo(toEmail);
+    //         helper.setSubject("Xác thực đăng ký JobHunter");
+    //         helper.setText(htmlContent, true);
+
+    //         javaMailSender.send(message);
+    //         System.out.println("Verification code sent successfully to: " + toEmail);
+    //     } catch (Exception e) {
+    //         System.out.println("Error sending verification code: " + e.getMessage());
+    //         e.printStackTrace();
+    //     }
+    // }
 
 }

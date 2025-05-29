@@ -67,4 +67,26 @@ public class GlobalException {
         res.setMessage("Exception upload file...");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
+
+    @ExceptionHandler(value = {
+            RegistrationException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleRegistrationException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError(ex.getMessage());
+        res.setMessage("Registration error occurred");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    @ExceptionHandler(value = {
+            EmailVerificationException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleEmailVerificationException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError(ex.getMessage());
+        res.setMessage("Email verification error occurred");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }

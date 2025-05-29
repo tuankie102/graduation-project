@@ -21,7 +21,6 @@ import vn.tuankiet.jobhunter.repository.JobRepository;
 import vn.tuankiet.jobhunter.repository.PostRepository;
 import vn.tuankiet.jobhunter.repository.ResumeRepository;
 import vn.tuankiet.jobhunter.repository.UserRepository;
-import vn.tuankiet.jobhunter.service.SubscriberService;
 
 @Service
 public class PostService {

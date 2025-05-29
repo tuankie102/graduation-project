@@ -3,17 +3,14 @@ package vn.tuankiet.jobhunter.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.Collections;
 
 import org.springframework.stereotype.Service;
 
 import vn.tuankiet.jobhunter.domain.Job;
-import vn.tuankiet.jobhunter.domain.Resume;
 import vn.tuankiet.jobhunter.domain.Skill;
 import vn.tuankiet.jobhunter.domain.Subscriber;
 import vn.tuankiet.jobhunter.domain.Post;
 import vn.tuankiet.jobhunter.domain.response.email.ResEmailJob;
-import vn.tuankiet.jobhunter.domain.response.email.ResEmailResume;
 import vn.tuankiet.jobhunter.repository.JobRepository;
 import vn.tuankiet.jobhunter.repository.SkillRepository;
 import vn.tuankiet.jobhunter.repository.SubscriberRepository;

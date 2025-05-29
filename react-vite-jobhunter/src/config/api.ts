@@ -37,6 +37,13 @@ export const callRegister = (
   });
 };
 
+export const callVerifyCode = async (code: string, userData: IUser) => {
+  return axios.post("/api/v1/auth/verify", {
+    ...userData,
+    code,
+  });
+};
+
 export const callLogin = (username: string, password: string) => {
   return axios.post<IBackendRes<IAccount>>("/api/v1/auth/login", {
     username,

@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
 import vn.tuankiet.jobhunter.util.constant.GenderEnum;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "NGUOIDUNG")
@@ -56,8 +57,11 @@ public class User {
     @Column(name = "diaChi")
     private String address;
 
-    @Column(name = "refreshToken", columnDefinition = "MEDIUMTEXT")
+    @Column(name = "refresh_token", columnDefinition = "MEDIUMTEXT")
     private String refreshToken;
+
+    @Transient
+    private String code;
 
     @Column(name = "ngayTao")
     private Instant createdAt;

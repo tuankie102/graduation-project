@@ -24,8 +24,12 @@ import vn.tuankiet.jobhunter.domain.request.ReqLoginDTO;
 import vn.tuankiet.jobhunter.domain.response.ResCreateUserDTO;
 import vn.tuankiet.jobhunter.domain.response.ResLoginDTO;
 import vn.tuankiet.jobhunter.service.UserService;
+import vn.tuankiet.jobhunter.service.EmailVerificationService;
+import vn.tuankiet.jobhunter.domain.request.ReqVerifyCode;
+import vn.tuankiet.jobhunter.util.constant.GenderEnum;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
 import vn.tuankiet.jobhunter.util.annotation.ApiMessage;
+import vn.tuankiet.jobhunter.util.error.EmailVerificationException;
 import vn.tuankiet.jobhunter.util.error.IdInvalidException;
 
 @RestController
@@ -36,6 +40,7 @@ public class AuthController {
     private final SecurityUtil securityUtil;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
 
     @Value("${tuankiet.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
@@ -44,11 +49,13 @@ public class AuthController {
             AuthenticationManagerBuilder authenticationManagerBuilder,
             SecurityUtil securityUtil,
             UserService userService,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            EmailVerificationService emailVerificationService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.emailVerificationService = emailVerificationService;
     }
 
     @PostMapping("/auth/login")
@@ -204,17 +211,30 @@ public class AuthController {
     }
 
     @PostMapping("/auth/register")
-    @ApiMessage("Register a new user")
+    @ApiMessage("Registering code has been sent to your email")
     public ResponseEntity<ResCreateUserDTO> register(@Valid @RequestBody User postManUser) throws IdInvalidException {
         boolean isEmailExist = this.userService.isEmailExist(postManUser.getEmail());
         if (isEmailExist) {
             throw new IdInvalidException(
-                    "Email " + postManUser.getEmail() + "đã tồn tại, vui lòng sử dụng email khác.");
+                    "Email " + postManUser.getEmail() + " đã tồn tại, vui lòng sử dụng email khác.");
         }
 
-        String hashPassword = this.passwordEncoder.encode(postManUser.getPassword());
-        postManUser.setPassword(hashPassword);
-        User ericUser = this.userService.handleCreateUser(postManUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(ericUser));
+        emailVerificationService.generateAndSaveVerificationCode(postManUser);
+        ResCreateUserDTO response = new ResCreateUserDTO();
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/auth/verify")
+    @ApiMessage("Verify registration code")
+    public ResponseEntity<ResCreateUserDTO> verifyCode(@Valid @RequestBody User user) {
+            emailVerificationService.verifyCode(user.getEmail(), user.getCode());
+            System.out.println("Verify code success with user: " + user);
+            // Create user account
+            String hashPassword = this.passwordEncoder.encode(user.getPassword());
+            user.setPassword(hashPassword);
+                
+            User createdUser = this.userService.handleCreateUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(createdUser));
+
     }
 }
