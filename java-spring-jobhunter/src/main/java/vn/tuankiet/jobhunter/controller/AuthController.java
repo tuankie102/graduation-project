@@ -14,15 +14,18 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.tuankiet.jobhunter.domain.User;
+import vn.tuankiet.jobhunter.domain.request.ReqChangePasswordDTO;
 import vn.tuankiet.jobhunter.domain.request.ReqLoginDTO;
 import vn.tuankiet.jobhunter.domain.response.ResCreateUserDTO;
 import vn.tuankiet.jobhunter.domain.response.ResLoginDTO;
+import vn.tuankiet.jobhunter.domain.response.ResUpdateUserDTO;
 import vn.tuankiet.jobhunter.service.UserService;
 import vn.tuankiet.jobhunter.service.EmailVerificationService;
 import vn.tuankiet.jobhunter.domain.request.ReqVerifyCode;
@@ -236,5 +239,31 @@ public class AuthController {
             User createdUser = this.userService.handleCreateUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(createdUser));
 
+    }
+
+    @PutMapping("/auth/change-password")
+    @ApiMessage("Change password successfully")
+    public ResponseEntity<ResUpdateUserDTO> changePassword(@Valid @RequestBody ReqChangePasswordDTO reqChangePasswordDTO) throws IdInvalidException {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+        if (email.equals("")) {
+            throw new IdInvalidException("Access Token không hợp lệ");
+        }
+
+        User currentUser = this.userService.handleGetUserByUsername(email);
+        if (currentUser == null) {
+            throw new IdInvalidException("Không tìm thấy người dùng");
+        }
+
+        // Verify old password
+        if (!this.passwordEncoder.matches(reqChangePasswordDTO.getOldPassword(), currentUser.getPassword())) {
+            throw new IdInvalidException("Mật khẩu cũ không đúng");
+        }
+
+        // Update new password
+        String hashedNewPassword = this.passwordEncoder.encode(reqChangePasswordDTO.getNewPassword());
+        currentUser.setPassword(hashedNewPassword);
+        User updatedUser = this.userService.handleUpdateUser(currentUser);
+
+        return ResponseEntity.ok().body(this.userService.convertToResUpdateUserDTO(updatedUser));
     }
 }

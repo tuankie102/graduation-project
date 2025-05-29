@@ -9,6 +9,7 @@ import {
   Tabs,
   message,
   notification,
+  Input,
 } from "antd";
 import { isMobile } from "react-device-detect";
 import type { TabsProps } from "antd";
@@ -20,6 +21,7 @@ import {
   callFetchResumeByUser,
   callGetSubscriberSkills,
   callUpdateSubscriber,
+  callChangePassword,
 } from "@/config/api";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -239,6 +241,91 @@ const JobByEmail = (props: any) => {
   );
 };
 
+const ChangePassword = () => {
+  const [form] = Form.useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const onFinish = async (values: any) => {
+    const { oldPassword, newPassword, confirmPassword } = values;
+    if (newPassword !== confirmPassword) {
+      message.error("Mật khẩu mới không khớp!");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const res = await callChangePassword(oldPassword, newPassword);
+      if (res?.data) {
+        message.success("Thay đổi mật khẩu thành công!");
+        form.resetFields();
+      } else {
+        notification.error({
+          message: "Có lỗi xảy ra",
+          description: res.error || "Không thể thay đổi mật khẩu",
+        });
+      }
+    } catch (error: any) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description:
+          error.response?.data?.error || "Không thể thay đổi mật khẩu",
+      });
+    }
+    setIsSubmitting(false);
+  };
+
+  return (
+    <Form form={form} onFinish={onFinish} layout="vertical">
+      <Row gutter={[20, 20]}>
+        <Col span={24}>
+          <Form.Item
+            name="oldPassword"
+            label="Mật khẩu cũ"
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu cũ" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item
+            name="newPassword"
+            label="Mật khẩu mới"
+            rules={[
+              { required: true, message: "Vui lòng nhập mật khẩu mới" },
+              { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item
+            name="confirmPassword"
+            label="Xác nhận mật khẩu mới"
+            rules={[
+              { required: true, message: "Vui lòng xác nhận mật khẩu mới" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("newPassword") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Mật khẩu không khớp!"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Button type="primary" htmlType="submit" loading={isSubmitting}>
+            Thay đổi mật khẩu
+          </Button>
+        </Col>
+      </Row>
+    </Form>
+  );
+};
+
 const ManageAccount = (props: IProps) => {
   const { open, onClose } = props;
 
@@ -265,7 +352,7 @@ const ManageAccount = (props: IProps) => {
     {
       key: "user-password",
       label: `Thay đổi mật khẩu`,
-      children: `//coming soon`,
+      children: <ChangePassword />,
     },
   ];
 
