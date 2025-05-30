@@ -89,4 +89,15 @@ public class GlobalException {
         res.setMessage("Email verification error occurred");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
+
+    @ExceptionHandler(value = {
+            ApplyLimitException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleApplyLimitException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError(ex.getMessage());
+        res.setMessage("Apply limit error occurred");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }

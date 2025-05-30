@@ -28,6 +28,7 @@ import vn.tuankiet.jobhunter.repository.PostRepository;
 import vn.tuankiet.jobhunter.repository.ResumeRepository;
 import vn.tuankiet.jobhunter.repository.UserRepository;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
+import vn.tuankiet.jobhunter.util.error.ApplyLimitException;
 
 @Service
 public class ResumeService {
@@ -43,6 +44,7 @@ public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private static final int MAX_APPLICATIONS_PER_POST = 5;
 
     public ResumeService(
             ResumeRepository resumeRepository,
@@ -76,6 +78,11 @@ public class ResumeService {
     }
 
     public ResCreateResumeDTO create(Resume resume) {
+        long applicationCount = resumeRepository.countByUserIdAndPostId(resume.getUser().getId(), resume.getPost().getId());
+        if (applicationCount >= MAX_APPLICATIONS_PER_POST) {
+            throw new ApplyLimitException("Bạn đã đạt đến giới hạn số lần ứng tuyển cho bài đăng này (tối đa " + MAX_APPLICATIONS_PER_POST + " lần)");
+        }
+
         resume = this.resumeRepository.save(resume);
 
         ResCreateResumeDTO res = new ResCreateResumeDTO();
