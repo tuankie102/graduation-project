@@ -1,5 +1,6 @@
 package vn.tuankiet.jobhunter.controller;
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import vn.tuankiet.jobhunter.domain.Role;
 import vn.tuankiet.jobhunter.domain.User;
 import vn.tuankiet.jobhunter.domain.request.ReqChangePasswordDTO;
 import vn.tuankiet.jobhunter.domain.request.ReqLoginDTO;
@@ -28,6 +30,7 @@ import vn.tuankiet.jobhunter.domain.response.ResLoginDTO;
 import vn.tuankiet.jobhunter.domain.response.ResUpdateUserDTO;
 import vn.tuankiet.jobhunter.service.UserService;
 import vn.tuankiet.jobhunter.service.EmailVerificationService;
+import vn.tuankiet.jobhunter.service.RoleService;
 import vn.tuankiet.jobhunter.domain.request.ReqVerifyCode;
 import vn.tuankiet.jobhunter.util.constant.GenderEnum;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
@@ -44,6 +47,7 @@ public class AuthController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final EmailVerificationService emailVerificationService;
+    private final RoleService roleService;
 
     @Value("${tuankiet.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
@@ -53,12 +57,14 @@ public class AuthController {
             SecurityUtil securityUtil,
             UserService userService,
             PasswordEncoder passwordEncoder,
-            EmailVerificationService emailVerificationService) {
+            EmailVerificationService emailVerificationService,
+            RoleService roleService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.emailVerificationService = emailVerificationService;
+        this.roleService = roleService;
     }
 
     @PostMapping("/auth/login")
@@ -240,10 +246,14 @@ public class AuthController {
     @ApiMessage("Verify registration code")
     public ResponseEntity<ResCreateUserDTO> verifyCode(@Valid @RequestBody User user) {
             emailVerificationService.verifyCode(user.getEmail(), user.getCode());
-            System.out.println("Verify code success with user: " + user);
             // Create user account
             String hashPassword = this.passwordEncoder.encode(user.getPassword());
             user.setPassword(hashPassword);
+
+            if (user.getRole() == null) {
+                Role userRole = this.roleService.findByName("NORMAL_USER");
+                user.setRole(userRole);
+            }
                 
             User createdUser = this.userService.handleCreateUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(createdUser));

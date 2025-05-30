@@ -129,8 +129,14 @@ public class DatabaseInitializer implements CommandLineRunner {
                 .collect(Collectors.toList());
             hrRole.setPermissions(hrPermissions);
 
+            Role userRole = new Role();
+            userRole.setName("NORMAL_USER");
+            userRole.setDescription("User có quyền chung");
+            userRole.setActive(true);
+
             this.roleRepository.save(adminRole);
             this.roleRepository.save(hrRole);
+            this.roleRepository.save(userRole);
         }
 
         if (countUsers == 0) {

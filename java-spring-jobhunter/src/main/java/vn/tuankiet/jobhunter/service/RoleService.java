@@ -32,6 +32,10 @@ public class RoleService {
         return this.roleRepository.existsByName(name);
     }
 
+    public Role findByName(String name) {
+        return this.roleRepository.findByName(name);
+    }
+
     public Role create(Role r) {
         // check permissions
         if (r.getPermissions() != null) {

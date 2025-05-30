@@ -34,6 +34,8 @@ const LayoutAdmin = () => {
   const permissions = useAppSelector(
     (state) => state.account.user.role.permissions
   );
+
+  const roleName = useAppSelector((state) => state.account.user.role.name);
   const [menuItems, setMenuItems] = useState<MenuProps["items"]>([]);
 
   const navigate = useNavigate();
@@ -85,11 +87,15 @@ const LayoutAdmin = () => {
       );
 
       const full = [
-        {
-          label: <Link to="/admin">Dashboard</Link>,
-          key: "/admin",
-          icon: <AppstoreOutlined />,
-        },
+        ...(roleName === "SUPER_ADMIN" || ACL_ENABLE === "false"
+          ? [
+              {
+                label: <Link to="/admin">Dashboard</Link>,
+                key: "/admin",
+                icon: <AppstoreOutlined />,
+              },
+            ]
+          : []),
         ...(viewCompany || ACL_ENABLE === "false"
           ? [
               {
@@ -160,7 +166,7 @@ const LayoutAdmin = () => {
 
       setMenuItems(full);
     }
-  }, [permissions]);
+  }, [permissions, roleName]);
   useEffect(() => {
     setActiveMenu(location.pathname);
   }, [location]);

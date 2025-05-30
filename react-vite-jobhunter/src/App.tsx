@@ -4,6 +4,7 @@ import {
   Outlet,
   RouterProvider,
   useLocation,
+  Navigate,
 } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import NotFound from "components/share/not.found";
@@ -57,6 +58,16 @@ const LayoutClient = () => {
   );
 };
 
+const AdminRoute = () => {
+  const user = useAppSelector(state => state.account.user);
+  
+  if (user?.role?.name === 'SUPER_ADMIN') {
+    return <DashboardPage />;
+  }
+  
+  return <Navigate to="/admin/job" replace />;
+};
+
 export default function App() {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector((state) => state.account.isLoading);
@@ -103,7 +114,7 @@ export default function App() {
           index: true,
           element: (
             <ProtectedRoute>
-              <DashboardPage />
+              <AdminRoute />
             </ProtectedRoute>
           ),
         },
