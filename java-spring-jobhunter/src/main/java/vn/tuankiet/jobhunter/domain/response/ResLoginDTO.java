@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.tuankiet.jobhunter.domain.Role;
 import vn.tuankiet.jobhunter.domain.Company;
+import vn.tuankiet.jobhunter.util.constant.GenderEnum;
 @Getter
 @Setter
 public class ResLoginDTO {
@@ -23,6 +24,9 @@ public class ResLoginDTO {
         private long id;
         private String email;
         private String name;
+        private int age;
+        private GenderEnum gender;
+        private String address;
         private Role role;
         private Company company;
     }

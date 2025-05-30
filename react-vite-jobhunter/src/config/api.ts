@@ -1,19 +1,22 @@
+import axios from "config/axios-customize";
 import {
   IBackendRes,
   ICompany,
-  IAccount,
-  IUser,
-  IModelPaginate,
-  IGetAccount,
   IJob,
   IResume,
+  IUser,
+  Statistics,
+} from "../types/backend";
+import {
+  IAccount,
+  IModelPaginate,
+  IGetAccount,
   IPermission,
   IRole,
   ISkill,
   ISubscribers,
   IPost,
 } from "@/types/backend";
-import axios from "config/axios-customize";
 
 /**
  * 
@@ -71,6 +74,10 @@ export const callChangePassword = (
     oldPassword,
     newPassword,
   });
+};
+
+export const callUpdateUserInfo = (user: IUser) => {
+  return axios.put("/api/v1/auth/update-info", user);
 };
 
 /**
@@ -384,4 +391,12 @@ export const callFetchPostForClient = (query: string) => {
 
 export const callFetchPostById = (id: string) => {
   return axios.get<IBackendRes<IPost>>(`/api/v1/posts/${id}`);
+};
+
+/**
+ * 
+Module Statistics
+ */
+export const callFetchStatistics = () => {
+  return axios.get<IBackendRes<Statistics>>("/api/v1/statistics");
 };

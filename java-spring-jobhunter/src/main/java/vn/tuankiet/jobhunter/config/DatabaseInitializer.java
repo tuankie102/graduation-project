@@ -96,6 +96,13 @@ public class DatabaseInitializer implements CommandLineRunner {
             arr.add(new Permission("Download a file", "/api/v1/files", "POST", "FILES"));
             arr.add(new Permission("Upload a file", "/api/v1/files", "GET", "FILES"));
 
+            // Add Statistics permissions
+            arr.add(new Permission("Get all statistics", "/api/v1/statistics", "GET", "STATISTICS"));
+            arr.add(new Permission("Get user statistics", "/api/v1/statistics/users", "GET", "STATISTICS"));
+            arr.add(new Permission("Get job statistics", "/api/v1/statistics/jobs", "GET", "STATISTICS"));
+            arr.add(new Permission("Get resume statistics", "/api/v1/statistics/resumes", "GET", "STATISTICS"));
+            arr.add(new Permission("Get skill statistics", "/api/v1/statistics/skills", "GET", "STATISTICS"));
+
             this.permissionRepository.saveAll(arr);
         }
 

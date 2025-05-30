@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "4.8.0",
+    "@ant-design/plots": "^2.4.0",
     "@ant-design/pro-components": "^2.8.7",
     "@ant-design/pro-layout": "7.17.19",
     "@reduxjs/toolkit": "1.9.3",

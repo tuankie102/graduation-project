@@ -19,6 +19,9 @@ interface IState {
     id: string;
     email: string;
     name: string;
+    age?: number;
+    gender?: string;
+    address?: string;
     role: {
       id?: string;
       name?: string;
@@ -48,6 +51,9 @@ const initialState: IState = {
     id: "",
     email: "",
     name: "",
+    age: undefined,
+    gender: undefined,
+    address: undefined,
     role: {
       id: "",
       name: "",
@@ -59,7 +65,6 @@ const initialState: IState = {
       logo: "",
     },
   },
-
   activeMenu: "home",
 };
 
@@ -78,6 +83,9 @@ export const accountSlide = createSlice({
       state.user.id = action?.payload?.id;
       state.user.email = action.payload.email;
       state.user.name = action.payload.name;
+      state.user.age = action.payload.age;
+      state.user.gender = action.payload.gender;
+      state.user.address = action.payload.address;
       state.user.role = action?.payload?.role;
       state.user.company = action?.payload?.company;
 
@@ -91,6 +99,9 @@ export const accountSlide = createSlice({
         id: "",
         email: "",
         name: "",
+        age: undefined,
+        gender: undefined,
+        address: undefined,
         role: {
           id: "",
           name: "",
@@ -124,6 +135,9 @@ export const accountSlide = createSlice({
         state.user.id = action?.payload?.user?.id;
         state.user.email = action.payload.user?.email;
         state.user.name = action.payload.user?.name;
+        state.user.age = action.payload.user?.age;
+        state.user.gender = action.payload.user?.gender;
+        state.user.address = action.payload.user?.address;
         state.user.role = action?.payload?.user?.role;
         if (!action?.payload?.user?.role) state.user.role = {};
         state.user.role.permissions =

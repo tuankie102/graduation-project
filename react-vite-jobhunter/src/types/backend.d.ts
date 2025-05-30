@@ -21,6 +21,9 @@ export interface IAccount {
     id: string;
     email: string;
     name: string;
+    age?: number;
+    gender?: string;
+    address?: string;
     role: {
       id: string;
       name: string;
@@ -212,4 +215,38 @@ export interface IPost {
   deletedAt?: boolean | null;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface Statistics {
+  userStatistics: {
+    totalUsers: number;
+    usersByRole: Record<string, number>;
+  };
+  jobStatistics: {
+    totalJobs: number;
+    activeJobs: number;
+    jobsByLocation: Record<string, number>;
+    jobsByCompany: Record<string, number>;
+    jobsByLevel: Record<string, number>;
+  };
+  resumeStatistics: {
+    totalResumes: number;
+    approvedResumes: number;
+    pendingResumes: number;
+    rejectedResumes: number;
+    resumesByStatus: Record<string, number>;
+  };
+  skillStatistics: {
+    topRequestedSkills: Array<{
+      name: string;
+      count: number;
+      approvedCount: number;
+    }>;
+    topResumeSkills: Array<{
+      name: string;
+      count: number;
+      approvedCount: number;
+    }>;
+    skillsByCategory: Record<string, number>;
+  };
 }

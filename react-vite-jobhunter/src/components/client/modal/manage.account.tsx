@@ -10,6 +10,7 @@ import {
   message,
   notification,
   Input,
+  InputNumber,
 } from "antd";
 import { isMobile } from "react-device-detect";
 import type { TabsProps } from "antd";
@@ -22,6 +23,8 @@ import {
   callGetSubscriberSkills,
   callUpdateSubscriber,
   callChangePassword,
+  callUpdateUserInfo,
+  callFetchAccount,
 } from "@/config/api";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -110,8 +113,128 @@ const UserResume = (props: any) => {
   );
 };
 
-const UserUpdateInfo = (props: any) => {
-  return <div>coming soon</div>;
+const UserUpdateInfo = () => {
+  const [form] = Form.useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const user = useAppSelector((state) => state.account.user);
+
+  useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+      try {
+        const res = await callFetchAccount();
+        if (res?.data) {
+          form.setFieldsValue({
+            name: res.data.user.name,
+            age: res.data.user.age,
+            address: res.data.user.address,
+            gender: res.data.user.gender,
+          });
+        }
+      } catch (error) {
+        notification.error({
+          message: "Có lỗi xảy ra",
+          description: "Không thể tải thông tin người dùng",
+        });
+      }
+      setIsLoading(false);
+    };
+    init();
+  }, []);
+
+  const onFinish = async (values: any) => {
+    setIsSubmitting(true);
+    try {
+      const res = await callUpdateUserInfo({
+        id: user.id,
+        email: user.email,
+        ...values,
+      });
+      if (res?.data) {
+        message.success("Cập nhật thông tin thành công!");
+        // Refresh user info after update
+        const updatedRes = await callFetchAccount();
+        if (updatedRes?.data) {
+          // The account slice will automatically update with new data
+          // through the fetchAccount thunk
+        }
+      } else {
+        notification.error({
+          message: "Có lỗi xảy ra",
+          description: res.error || "Không thể cập nhật thông tin",
+        });
+      }
+    } catch (error: any) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description:
+          error.response?.data?.error || "Không thể cập nhật thông tin",
+      });
+    }
+    setIsSubmitting(false);
+  };
+
+  return (
+    <Form form={form} onFinish={onFinish} layout="vertical">
+      <Row gutter={[20, 20]}>
+        <Col span={24}>
+          <Form.Item
+            name="name"
+            label="Họ và tên"
+            rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
+          >
+            <Input disabled={isLoading} />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item
+            name="age"
+            label="Tuổi"
+            rules={[{ required: true, message: "Vui lòng nhập tuổi" }]}
+          >
+            <InputNumber
+              min={18}
+              max={100}
+              style={{ width: "100%" }}
+              disabled={isLoading}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item
+            name="gender"
+            label="Giới tính"
+            rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
+          >
+            <Select disabled={isLoading}>
+              <Select.Option value="MALE">Nam</Select.Option>
+              <Select.Option value="FEMALE">Nữ</Select.Option>
+              <Select.Option value="OTHER">Khác</Select.Option>
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Form.Item
+            name="address"
+            label="Địa chỉ"
+            rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
+          >
+            <Input disabled={isLoading} />
+          </Form.Item>
+        </Col>
+        <Col span={24}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={isSubmitting || isLoading}
+          >
+            Cập nhật thông tin
+          </Button>
+        </Col>
+      </Row>
+    </Form>
+  );
 };
 
 const JobByEmail = (props: any) => {

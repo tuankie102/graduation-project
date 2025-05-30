@@ -81,6 +81,9 @@ public class AuthController {
                     currentUserDB.getId(),
                     currentUserDB.getEmail(),
                     currentUserDB.getName(),
+                    currentUserDB.getAge(),
+                    currentUserDB.getGender(),
+                    currentUserDB.getAddress(),
                     currentUserDB.getRole(),
                     currentUserDB.getCompany());
             res.setUser(userLogin);
@@ -125,6 +128,9 @@ public class AuthController {
             userLogin.setId(currentUserDB.getId());
             userLogin.setEmail(currentUserDB.getEmail());
             userLogin.setName(currentUserDB.getName());
+            userLogin.setAge(currentUserDB.getAge());
+            userLogin.setGender(currentUserDB.getGender());
+            userLogin.setAddress(currentUserDB.getAddress());
             userLogin.setRole(currentUserDB.getRole());
             userLogin.setCompany(currentUserDB.getCompany());
 
@@ -158,6 +164,9 @@ public class AuthController {
                     currentUserDB.getId(),
                     currentUserDB.getEmail(),
                     currentUserDB.getName(),
+                    currentUserDB.getAge(),
+                    currentUserDB.getGender(),
+                    currentUserDB.getAddress(),
                     currentUserDB.getRole(),
                     currentUserDB.getCompany());
             res.setUser(userLogin);
@@ -264,6 +273,29 @@ public class AuthController {
         currentUser.setPassword(hashedNewPassword);
         User updatedUser = this.userService.handleUpdateUser(currentUser);
 
+        return ResponseEntity.ok().body(this.userService.convertToResUpdateUserDTO(updatedUser));
+    }
+
+    @PutMapping("/auth/update-info")
+    @ApiMessage("Update user information successfully")
+    public ResponseEntity<ResUpdateUserDTO> updateUserInfo(@Valid @RequestBody ResUpdateUserDTO userDTO) throws IdInvalidException {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+        if (email.equals("")) {
+            throw new IdInvalidException("Access Token không hợp lệ");
+        }
+
+        User currentUser = this.userService.handleGetUserByUsername(email);
+        if (currentUser == null) {
+            throw new IdInvalidException("Không tìm thấy người dùng");
+        }
+
+        // Update user information
+        currentUser.setName(userDTO.getName());
+        currentUser.setAge(userDTO.getAge());
+        currentUser.setAddress(userDTO.getAddress());
+        currentUser.setGender(userDTO.getGender());
+
+        User updatedUser = this.userService.handleUpdateUser(currentUser);
         return ResponseEntity.ok().body(this.userService.convertToResUpdateUserDTO(updatedUser));
     }
 }
