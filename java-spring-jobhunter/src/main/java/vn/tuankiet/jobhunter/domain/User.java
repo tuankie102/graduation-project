@@ -88,6 +88,13 @@ public class User {
     @JsonIgnore
     private List<Resume> resumes;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Transaction> transactions;
+
+    @Column(name = "soDu", columnDefinition = "DOUBLE DEFAULT 0")
+    private Double balance = 0.0;
+
     @PrePersist
     public void handleBeforeCreate() {
         this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent()

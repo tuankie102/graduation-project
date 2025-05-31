@@ -35,15 +35,33 @@ import PostPage from "./pages/admin/post";
 import ViewUpsertPost from "./components/admin/post/upsert.post";
 import ClientPostPage from "./pages/post";
 import ClientPostDetailPage from "./pages/post/detail";
+import { message } from "antd";
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const location = useLocation();
   const rootRef = useRef<HTMLDivElement>(null);
+  const notificationShownRef = useRef(false);
 
   useEffect(() => {
     if (rootRef && rootRef.current) {
       rootRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location]);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const paymentStatus = searchParams.get("payment");
+
+    if (paymentStatus && !notificationShownRef.current) {
+      if (paymentStatus === "success") {
+        message.success(
+          "Thanh toán thành công! Số dư của bạn đã được cập nhật."
+        );
+      } else if (paymentStatus === "failed") {
+        message.error("Thanh toán thất bại. Vui lòng thử lại sau.");
+      }
+      notificationShownRef.current = true;
     }
   }, [location]);
 
@@ -59,12 +77,12 @@ const LayoutClient = () => {
 };
 
 const AdminRoute = () => {
-  const user = useAppSelector(state => state.account.user);
-  
-  if (user?.role?.name === 'SUPER_ADMIN') {
+  const user = useAppSelector((state) => state.account.user);
+
+  if (user?.role?.name === "SUPER_ADMIN") {
     return <DashboardPage />;
   }
-  
+
   return <Navigate to="/admin/job" replace />;
 };
 

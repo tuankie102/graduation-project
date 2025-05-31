@@ -400,3 +400,8 @@ Module Statistics
 export const callFetchStatistics = () => {
   return axios.get<IBackendRes<Statistics>>("/api/v1/statistics");
 };
+
+export const callDeposit = async (amount: number) => {
+  const res = await axios.post("/api/v1/payments/deposit", { amount });
+  return res;
+};

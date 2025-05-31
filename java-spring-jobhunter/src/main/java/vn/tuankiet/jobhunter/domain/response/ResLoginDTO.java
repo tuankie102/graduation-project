@@ -29,6 +29,7 @@ public class ResLoginDTO {
         private String address;
         private Role role;
         private Company company;
+        private double balance;
     }
 
     @Getter

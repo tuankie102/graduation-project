@@ -17,6 +17,7 @@ public class ResCreateUserDTO {
     private int age;
     private Instant createdAt;
     private CompanyUser company;
+    private double balance;
 
     @Getter
     @Setter

@@ -19,6 +19,7 @@ interface IState {
     id: string;
     email: string;
     name: string;
+    balance: number;
     age?: number;
     gender?: string;
     address?: string;
@@ -51,6 +52,7 @@ const initialState: IState = {
     id: "",
     email: "",
     name: "",
+    balance: 0,
     age: undefined,
     gender: undefined,
     address: undefined,
@@ -83,6 +85,7 @@ export const accountSlide = createSlice({
       state.user.id = action?.payload?.id;
       state.user.email = action.payload.email;
       state.user.name = action.payload.name;
+      state.user.balance = action.payload.balance;
       state.user.age = action.payload.age;
       state.user.gender = action.payload.gender;
       state.user.address = action.payload.address;
@@ -99,6 +102,7 @@ export const accountSlide = createSlice({
         id: "",
         email: "",
         name: "",
+        balance: 0,
         age: undefined,
         gender: undefined,
         address: undefined,
@@ -135,6 +139,7 @@ export const accountSlide = createSlice({
         state.user.id = action?.payload?.user?.id;
         state.user.email = action.payload.user?.email;
         state.user.name = action.payload.user?.name;
+        state.user.balance = action.payload.user?.balance;
         state.user.age = action.payload.user?.age;
         state.user.gender = action.payload.user?.gender;
         state.user.address = action.payload.user?.address;

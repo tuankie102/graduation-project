@@ -26,6 +26,8 @@ public class ResUserDTO {
 
     private RoleUser role;
 
+    private double balance;
+
     @Getter
     @Setter
     @AllArgsConstructor

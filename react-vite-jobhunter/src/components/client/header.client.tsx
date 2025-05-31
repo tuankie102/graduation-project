@@ -7,6 +7,7 @@ import {
   MenuFoldOutlined,
   RiseOutlined,
   TwitterOutlined,
+  WalletOutlined,
 } from "@ant-design/icons";
 import { Avatar, Drawer, Dropdown, MenuProps, Space, message } from "antd";
 import { Menu, ConfigProvider } from "antd";
@@ -19,6 +20,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { callLogout } from "@/config/api";
 import { setLogoutAction } from "@/redux/slice/accountSlide";
 import ManageAccount from "./modal/manage.account";
+import DepositMoney from "./modal/deposit.money";
 
 const Header = (props: any) => {
   const navigate = useNavigate();
@@ -34,6 +36,7 @@ const Header = (props: any) => {
   const location = useLocation();
 
   const [openMangeAccount, setOpenManageAccount] = useState<boolean>(false);
+  const [openDepositMoney, setOpenDepositMoney] = useState<boolean>(false);
 
   useEffect(() => {
     setCurrent(location.pathname);
@@ -73,6 +76,8 @@ const Header = (props: any) => {
   const handleMenuClick = (e: { key: string }) => {
     if (e.key === "manage-account") {
       setOpenManageAccount(true);
+    } else if (e.key === "deposit") {
+      setOpenDepositMoney(true);
     } else if (e.key === "logout") {
       handleLogout();
     }
@@ -83,6 +88,11 @@ const Header = (props: any) => {
       label: "Quản lý tài khoản",
       key: "manage-account",
       icon: <ContactsOutlined />,
+    },
+    {
+      label: "Nạp tiền",
+      key: "deposit",
+      icon: <WalletOutlined />,
     },
     ...(user.role?.permissions?.length
       ? [
@@ -136,7 +146,10 @@ const Header = (props: any) => {
                       trigger={["click"]}
                     >
                       <Space style={{ cursor: "pointer" }}>
-                        <span>Welcome {user?.name}</span>
+                        <span>
+                          Welcome {user?.name} - Số dư:{" "}
+                          {user?.balance?.toLocaleString("vi-VN")} VNĐ
+                        </span>
                         <Avatar>
                           {user?.name?.substring(0, 2)?.toUpperCase()}
                         </Avatar>
@@ -168,6 +181,7 @@ const Header = (props: any) => {
         />
       </Drawer>
       <ManageAccount open={openMangeAccount} onClose={setOpenManageAccount} />
+      <DepositMoney open={openDepositMoney} onClose={setOpenDepositMoney} />
     </>
   );
 };

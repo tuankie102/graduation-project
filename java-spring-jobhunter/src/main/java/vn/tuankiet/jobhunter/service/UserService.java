@@ -21,6 +21,7 @@ import vn.tuankiet.jobhunter.domain.response.ResultPaginationDTO;
 import vn.tuankiet.jobhunter.repository.PostRepository;
 import vn.tuankiet.jobhunter.repository.ResumeRepository;
 import vn.tuankiet.jobhunter.repository.UserRepository;
+import vn.tuankiet.jobhunter.util.constant.PaymentStatusEnum;
 
 @Service
 public class UserService {
@@ -80,6 +81,20 @@ public class UserService {
         Optional<User> userOptional = this.userRepository.findById(id);
         if (userOptional.isPresent()) {
             return userOptional.get();
+        }
+        return null;
+    }
+
+    public void updateUserBalance(User user, double amount) {
+        if (user != null) {
+            user.setBalance(user.getBalance() + amount);
+            this.userRepository.save(user);
+        }
+    }
+    public User fetchUserByEmail(String email) {
+       User user = this.userRepository.findByEmail(email);
+        if (user != null) {
+            return user;
         }
         return null;
     }

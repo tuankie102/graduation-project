@@ -22,9 +22,12 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.nimbusds.jose.util.Base64;
 
+import jakarta.servlet.http.HttpServletRequest;
 import vn.tuankiet.jobhunter.domain.response.ResLoginDTO;
 
 @Service
@@ -136,6 +139,20 @@ public class SecurityUtil {
             return s;
         }
         return null;
+    }
+
+    public String getCurrentUserIp() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String ipAdress;
+        try {
+            ipAdress = request.getHeader("X-FORWARDED-FOR");
+            if (ipAdress == null) {
+                ipAdress = request.getRemoteAddr();
+            }
+        } catch (Exception e) {
+            ipAdress = "Invalid IP:" + e.getMessage();
+        }
+        return ipAdress;
     }
 
     /**
