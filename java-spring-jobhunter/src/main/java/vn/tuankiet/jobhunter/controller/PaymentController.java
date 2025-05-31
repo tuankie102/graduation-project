@@ -56,7 +56,7 @@ public class PaymentController {
             throw new IdInvalidException("Access Token không hợp lệ");
         }
 
-        double amount = reqDepositDTO.getAmount();
+        Double amount = reqDepositDTO.getAmount();
         User user = userService.fetchUserByEmail(email);
         String ip = securityUtil.getCurrentUserIp();
             

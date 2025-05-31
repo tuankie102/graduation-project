@@ -10,5 +10,5 @@ import lombok.Setter;
 public class ReqDepositDTO {
 
     @NotNull(message = "Amount is required")
-    private double amount;
+    private Double amount;
 }

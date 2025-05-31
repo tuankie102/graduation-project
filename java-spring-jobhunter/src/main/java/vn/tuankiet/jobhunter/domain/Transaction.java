@@ -36,7 +36,7 @@ public class Transaction {
 
     @NotNull(message = "soTien không được để trống")
     @Column(name = "soTien")
-    private double amount;
+    private Double amount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "trangThai")
