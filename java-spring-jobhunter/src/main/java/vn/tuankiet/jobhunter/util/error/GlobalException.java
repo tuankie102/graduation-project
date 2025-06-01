@@ -100,4 +100,15 @@ public class GlobalException {
         res.setMessage("Apply limit error occurred");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
+
+    @ExceptionHandler(value = {
+            BalanceException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleBalanceException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError(ex.getMessage());
+        res.setMessage("Balance error occurred");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
 }

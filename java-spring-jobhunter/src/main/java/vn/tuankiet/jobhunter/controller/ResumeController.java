@@ -33,6 +33,7 @@ import vn.tuankiet.jobhunter.domain.response.resume.ResFetchResumeDTO;
 import vn.tuankiet.jobhunter.domain.response.resume.ResUpdateResumeDTO;
 import vn.tuankiet.jobhunter.service.EmailService;
 import vn.tuankiet.jobhunter.service.ResumeService;
+import vn.tuankiet.jobhunter.service.TransactionService;
 import vn.tuankiet.jobhunter.service.UserService;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
 import vn.tuankiet.jobhunter.util.annotation.ApiMessage;
@@ -47,18 +48,21 @@ public class ResumeController {
     private final EmailService emailService;
     private final FilterBuilder filterBuilder;
     private final FilterSpecificationConverter filterSpecificationConverter;
+    private final TransactionService transactionService;
 
     public ResumeController(
             ResumeService resumeService,
             UserService userService,
             EmailService emailService,
             FilterBuilder filterBuilder,
-            FilterSpecificationConverter filterSpecificationConverter) {
+            FilterSpecificationConverter filterSpecificationConverter,
+            TransactionService transactionService) {
         this.resumeService = resumeService;
         this.userService = userService;
         this.emailService = emailService;
         this.filterBuilder = filterBuilder;
         this.filterSpecificationConverter = filterSpecificationConverter;
+        this.transactionService = transactionService;
     }
 
     @PostMapping("/resumes")
@@ -69,6 +73,16 @@ public class ResumeController {
         if (!isIdExist) {
             throw new IdInvalidException("User id/Post id không tồn tại");
         }
+
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+        if (email.equals("")) {
+            throw new IdInvalidException("Access Token không hợp lệ");
+        }
+
+        User user = userService.fetchUserByEmail(email);
+        
+        // Xử lý phí ứng tuyển
+        transactionService.handleApplyFee(user);
 
         // create new resume
         return ResponseEntity.status(HttpStatus.CREATED).body(this.resumeService.create(resume));

@@ -31,6 +31,7 @@ import vn.tuankiet.jobhunter.domain.response.post.ResCreatePostDTO;
 import vn.tuankiet.jobhunter.domain.response.post.ResFetchPostDTO;
 import vn.tuankiet.jobhunter.domain.response.post.ResUpdatePostDTO;
 import vn.tuankiet.jobhunter.service.PostService;
+import vn.tuankiet.jobhunter.service.TransactionService;
 import vn.tuankiet.jobhunter.service.UserService;
 import vn.tuankiet.jobhunter.util.SecurityUtil;
 import vn.tuankiet.jobhunter.util.annotation.ApiMessage;
@@ -43,21 +44,31 @@ public class PostController {
     private final UserService userService;
     private final FilterBuilder filterBuilder;
     private final FilterSpecificationConverter filterSpecificationConverter;
+    private final TransactionService transactionService;
+
 
     public PostController(
             PostService postService,
             UserService userService,
             FilterBuilder filterBuilder,
-            FilterSpecificationConverter filterSpecificationConverter) {
+            FilterSpecificationConverter filterSpecificationConverter,
+            TransactionService transactionService) {
         this.postService = postService;
         this.userService = userService;
         this.filterBuilder = filterBuilder;
         this.filterSpecificationConverter = filterSpecificationConverter;
+        this.transactionService = transactionService;
     }
 
     @PostMapping("/posts")
     @ApiMessage("Create a post")
     public ResponseEntity<ResCreatePostDTO> create(@Valid @RequestBody Post post) {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        User user = this.userService.handleGetUserByUsername(email);
+        this.transactionService.handleCreatePostFee(user);
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(this.postService.create(post));
     }

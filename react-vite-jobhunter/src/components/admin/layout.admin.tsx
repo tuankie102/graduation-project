@@ -267,7 +267,8 @@ const LayoutAdmin = () => {
                 trigger={["click"]}
               >
                 <Space style={{ cursor: "pointer" }}>
-                  Welcome {user?.name}
+                  Welcome {user?.name} - Số dư:{" "}
+                  {user?.balance?.toLocaleString("vi-VN")} VNĐ
                   <Avatar>
                     {" "}
                     {user?.name?.substring(0, 2)?.toUpperCase()}{" "}
