@@ -1,4 +1,5 @@
-import { useAppSelector } from "@/redux/hooks";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { fetchAccount } from "@/redux/slice/accountSlide";
 import { IJob, IPost } from "@/types/backend";
 import { ProForm, ProFormText } from "@ant-design/pro-components";
 import {
@@ -27,6 +28,7 @@ interface IProps {
 
 const ApplyModal = (props: IProps) => {
   const { isModalOpen, setIsModalOpen, postDetail } = props;
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(
     (state) => state.account.isAuthenticated
   );
@@ -53,6 +55,7 @@ const ApplyModal = (props: IProps) => {
           user.id
         );
         if (res.data) {
+          await dispatch(fetchAccount());
           message.success("Rải CV thành công!");
           setIsModalOpen(false);
         } else {

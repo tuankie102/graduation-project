@@ -193,23 +193,28 @@ export interface IPost {
   active: boolean;
   job?: {
     id: string;
-    name: string;
-    location: string;
-    salary: number;
-    quantity: number;
-    level: string;
-    description: string;
-    company: {
+    name?: string;
+    location?: string;
+    salary?: number;
+    quantity?: number;
+    level?: string;
+    description?: string;
+    company?: {
       id: string;
       name: string;
       logo?: string;
     };
-    skills: ISkill[];
+    skills?: ISkill[];
     user?: {
       id: string;
       email: string;
       name: string;
     };
+  };
+  user?: {
+    id: string;
+    email: string;
+    name: string;
   };
 
   createdBy?: string;
