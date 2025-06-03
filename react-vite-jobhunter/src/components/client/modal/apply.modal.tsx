@@ -56,7 +56,7 @@ const ApplyModal = (props: IProps) => {
         );
         if (res.data) {
           await dispatch(fetchAccount());
-          message.success("Rải CV thành công!");
+          message.success("Ứng tuyển thành công!");
           setIsModalOpen(false);
         } else {
           notification.error({
@@ -90,7 +90,7 @@ const ApplyModal = (props: IProps) => {
         // console.log(info.file, info.fileList);
       }
       if (info.file.status === "done") {
-        message.success(`${info.file.name} file uploaded successfully`);
+        message.success(`${info.file.name} file tải lên thành công`);
       } else if (info.file.status === "error") {
         message.error(
           info?.file?.error?.event?.message ??
@@ -103,12 +103,12 @@ const ApplyModal = (props: IProps) => {
   return (
     <>
       <Modal
-        title="Ứng Tuyển Job"
+        title="Ứng Tuyển công việc"
         open={isModalOpen}
         onOk={() => handleOkButton()}
         onCancel={() => setIsModalOpen(false)}
         maskClosable={false}
-        okText={isAuthenticated ? "Rải CV" : "Đăng Nhập Nhanh"}
+        okText={isAuthenticated ? "Ứng tuyển" : "Đăng Nhập Nhanh"}
         cancelButtonProps={{ style: { display: "none" } }}
         destroyOnClose={true}
       >
@@ -163,7 +163,7 @@ const ApplyModal = (props: IProps) => {
         ) : (
           <div>
             Bạn chưa đăng nhập hệ thống. Vui lòng đăng nhập để có thể ứng tuyển
-            công việc bạn nhé -.-
+            công việc!
           </div>
         )}
         <Divider />

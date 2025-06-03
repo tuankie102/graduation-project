@@ -68,7 +68,7 @@ const UserResume = (props: any) => {
       dataIndex: "companyName",
     },
     {
-      title: "Job title",
+      title: "Công việc",
       dataIndex: "jobName",
     },
     {
@@ -76,7 +76,7 @@ const UserResume = (props: any) => {
       dataIndex: "status",
     },
     {
-      title: "Ngày rải CV",
+      title: "Ngày ứng tuyển",
       dataIndex: "createdAt",
       render(value, record, index) {
         return <>{dayjs(record.createdAt).format("DD-MM-YYYY HH:mm:ss")}</>;
@@ -459,7 +459,7 @@ const ManageAccount = (props: IProps) => {
   const items: TabsProps["items"] = [
     {
       key: "user-resume",
-      label: `Rải CV`,
+      label: `Ứng tuyển`,
       children: <UserResume />,
     },
     {

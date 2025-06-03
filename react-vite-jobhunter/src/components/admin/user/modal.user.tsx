@@ -79,16 +79,18 @@ const ModalUser = (props: IProps) => {
         age,
         gender,
         address,
+        balance: 0,
         role: { id: role.value, name: "" },
         company: {
           id: company.value,
           name: company.label,
+          logo: company?.logo || "",
         },
       };
 
       const res = await callUpdateUser(user);
       if (res.data) {
-        message.success("Cập nhật user thành công");
+        message.success("Cập nhật người dùng thành công");
         handleReset();
         reloadTable();
       } else {
@@ -106,10 +108,12 @@ const ModalUser = (props: IProps) => {
         age,
         gender,
         address,
+        balance: 0,
         role: { id: role.value, name: role.label },
         company: {
           id: company.value,
           name: company.label,
+          logo: company?.logo || "",
         },
       };
       const res = await callCreateUser(user);
@@ -166,7 +170,9 @@ const ModalUser = (props: IProps) => {
   return (
     <>
       <ModalForm
-        title={<>{dataInit?.id ? "Cập nhật User" : "Tạo mới User"}</>}
+        title={
+          <>{dataInit?.id ? "Cập nhật Người Dùng" : "Tạo mới Người Dùng"}</>
+        }
         open={openModal}
         modalProps={{
           onCancel: () => {
@@ -255,15 +261,15 @@ const ModalUser = (props: IProps) => {
           <Col lg={6} md={6} sm={24} xs={24}>
             <ProForm.Item
               name="role"
-              label="Vai trò"
-              rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
+              label="Role"
+              rules={[{ required: true, message: "Vui lòng chọn role!" }]}
             >
               <DebounceSelect
                 allowClear
                 showSearch
                 defaultValue={roles}
                 value={roles}
-                placeholder="Chọn công vai trò"
+                placeholder="Chọn role"
                 fetchOptions={fetchRoleList}
                 onChange={(newValue: any) => {
                   if (newValue?.length === 0 || newValue?.length === 1) {
@@ -278,7 +284,7 @@ const ModalUser = (props: IProps) => {
             <ProForm.Item
               name="company"
               label="Thuộc Công Ty"
-              rules={[{ required: true, message: "Vui lòng chọn company!" }]}
+              rules={[{ required: true, message: "Vui lòng chọn Công Ty!" }]}
             >
               <DebounceSelect
                 allowClear

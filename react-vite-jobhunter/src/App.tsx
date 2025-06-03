@@ -26,8 +26,6 @@ import UserPage from "./pages/admin/user";
 import { fetchAccount } from "./redux/slice/accountSlide";
 import LayoutApp from "./components/share/layout.app";
 import ViewUpsertJob from "./components/admin/job/upsert.job";
-import ClientJobPage from "./pages/job";
-import ClientJobDetailPage from "./pages/job/detail";
 import ClientCompanyPage from "./pages/company";
 import ClientCompanyDetailPage from "./pages/company/detail";
 import JobTabs from "./pages/admin/job/job.tabs";
@@ -110,8 +108,6 @@ export default function App() {
       errorElement: <NotFound />,
       children: [
         { index: true, element: <HomePage /> },
-        { path: "job", element: <ClientJobPage /> },
-        { path: "job/:id", element: <ClientJobDetailPage /> },
         { path: "post", element: <ClientPostPage /> },
         { path: "post/:id", element: <ClientPostDetailPage /> },
         { path: "company", element: <ClientCompanyPage /> },

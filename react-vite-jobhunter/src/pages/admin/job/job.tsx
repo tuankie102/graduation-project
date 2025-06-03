@@ -31,7 +31,7 @@ const JobPage = () => {
     if (id) {
       const res = await callDeleteJob(id);
       if (res && res.data) {
-        message.success("Xóa Job thành công");
+        message.success("Xóa công việc thành công");
         reloadTable();
       } else {
         notification.error({
@@ -58,7 +58,7 @@ const JobPage = () => {
       hideInSearch: true,
     },
     {
-      title: "Tên Job",
+      title: "Tên công việc",
       dataIndex: "name",
       sorter: true,
     },
@@ -164,8 +164,8 @@ const JobPage = () => {
           <Access permission={ALL_PERMISSIONS.JOBS.DELETE} hideChildren>
             <Popconfirm
               placement="leftTop"
-              title={"Xác nhận xóa job"}
-              description={"Bạn có chắc chắn muốn xóa job này ?"}
+              title={"Xác nhận xóa công việc"}
+              description={"Bạn có chắc chắn muốn xóa công việc này ?"}
               onConfirm={() => handleDeleteJob(entity.id)}
               okText="Xác nhận"
               cancelText="Hủy"
@@ -234,7 +234,7 @@ const JobPage = () => {
       <Access permission={ALL_PERMISSIONS.JOBS.GET_PAGINATE}>
         <DataTable<IJob>
           actionRef={tableRef}
-          headerTitle="Danh sách Jobs"
+          headerTitle="Danh sách công việc"
           rowKey="id"
           loading={isFetching}
           columns={columns}

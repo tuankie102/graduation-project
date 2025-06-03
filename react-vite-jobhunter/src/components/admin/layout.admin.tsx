@@ -99,7 +99,7 @@ const LayoutAdmin = () => {
         ...(viewCompany || ACL_ENABLE === "false"
           ? [
               {
-                label: <Link to="/admin/company">Company</Link>,
+                label: <Link to="/admin/company">Công Ty</Link>,
                 key: "/admin/company",
                 icon: <BankOutlined />,
               },
@@ -109,7 +109,7 @@ const LayoutAdmin = () => {
         ...(viewUser || ACL_ENABLE === "false"
           ? [
               {
-                label: <Link to="/admin/user">User</Link>,
+                label: <Link to="/admin/user">Người Dùng</Link>,
                 key: "/admin/user",
                 icon: <UserOutlined />,
               },
@@ -118,7 +118,7 @@ const LayoutAdmin = () => {
         ...(viewJob || ACL_ENABLE === "false"
           ? [
               {
-                label: <Link to="/admin/job">Job</Link>,
+                label: <Link to="/admin/job">Việc Làm</Link>,
                 key: "/admin/job",
                 icon: <ScheduleOutlined />,
               },
@@ -128,7 +128,7 @@ const LayoutAdmin = () => {
         ...(viewPost || ACL_ENABLE === "false"
           ? [
               {
-                label: <Link to="/admin/post">Post</Link>,
+                label: <Link to="/admin/post">Bài đăng</Link>,
                 key: "/admin/post",
                 icon: <FileTextOutlined />,
               },
@@ -138,7 +138,7 @@ const LayoutAdmin = () => {
         ...(viewResume || ACL_ENABLE === "false"
           ? [
               {
-                label: <Link to="/admin/resume">Resume</Link>,
+                label: <Link to="/admin/resume">Hồ sơ CV</Link>,
                 key: "/admin/resume",
                 icon: <AliwangwangOutlined />,
               },
@@ -147,7 +147,7 @@ const LayoutAdmin = () => {
         ...(viewPermission || ACL_ENABLE === "false"
           ? [
               {
-                label: <Link to="/admin/permission">Permission</Link>,
+                label: <Link to="/admin/permission">Quyền</Link>,
                 key: "/admin/permission",
                 icon: <ApiOutlined />,
               },

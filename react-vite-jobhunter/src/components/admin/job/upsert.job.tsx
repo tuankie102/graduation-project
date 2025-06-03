@@ -195,7 +195,7 @@ const ViewUpsertJob = (props: any) => {
 
       const res = await callUpdateJob(job, dataUpdate.id);
       if (res.data) {
-        message.success("Cập nhật job thành công");
+        message.success("Cập nhật công việc thành công");
         navigate("/admin/job");
       } else {
         notification.error({
@@ -229,7 +229,7 @@ const ViewUpsertJob = (props: any) => {
 
       const res = await callCreateJob(job);
       if (res.data) {
-        message.success("Tạo mới job thành công");
+        message.success("Tạo mới công việc thành công");
         navigate("/admin/job");
       } else {
         notification.error({

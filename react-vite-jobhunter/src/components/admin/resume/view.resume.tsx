@@ -135,17 +135,17 @@ const ViewDetailResume = (props: IProps) => {
             rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
           >
             <Select style={{ width: "100%" }}>
-              <Option value="PENDING">PENDING</Option>
-              <Option value="REVIEWING">REVIEWING</Option>
-              <Option value="APPROVED">APPROVED</Option>
-              <Option value="REJECTED">REJECTED</Option>
+              <Option value="PENDING">Chờ duyệt</Option>
+              <Option value="REVIEWING">Đang xem xét</Option>
+              <Option value="APPROVED">Đã duyệt</Option>
+              <Option value="REJECTED">Đã từ chối</Option>
             </Select>
           </Form.Item>
         </Form>
 
         <Descriptions title="" bordered column={2} layout="vertical">
           <Descriptions.Item label="Email">{dataInit?.email}</Descriptions.Item>
-          <Descriptions.Item label="Tên Job">
+          <Descriptions.Item label="Tên Công Việc">
             {dataInit?.jobName}
           </Descriptions.Item>
           <Descriptions.Item label="Tên Công Ty">
