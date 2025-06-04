@@ -360,14 +360,42 @@ const ViewUpsertJob = (props: any) => {
 
               {(dataUpdate?.id || !id) && (
                 <Col span={24} md={6}>
-                  <ProFormText
-                    name="company"
-                    label="Thuộc Công Ty"
-                    fieldProps={{
-                      value: companies[0]?.label,
-                      disabled: true,
-                    }}
-                  />
+                  {user?.role?.name === "SUPER_ADMIN" ? (
+                    <ProForm.Item
+                      name="company"
+                      label="Thuộc Công Ty"
+                      rules={[
+                        { required: true, message: "Vui lòng chọn company!" },
+                      ]}
+                    >
+                      <DebounceSelect
+                        allowClear
+                        showSearch
+                        defaultValue={companies}
+                        value={companies}
+                        placeholder="Chọn công ty"
+                        fetchOptions={fetchCompanyList}
+                        onChange={(newValue: any) => {
+                          if (
+                            newValue?.length === 0 ||
+                            newValue?.length === 1
+                          ) {
+                            setCompanies(newValue as ICompanySelect[]);
+                          }
+                        }}
+                        style={{ width: "100%" }}
+                      />
+                    </ProForm.Item>
+                  ) : (
+                    <ProFormText
+                      name="company"
+                      label="Thuộc Công Ty"
+                      fieldProps={{
+                        value: companies[0]?.label,
+                        disabled: true,
+                      }}
+                    />
+                  )}
                 </Col>
               )}
             </Row>
