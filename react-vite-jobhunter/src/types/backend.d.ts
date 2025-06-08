@@ -257,3 +257,21 @@ export interface Statistics {
     skillsByCategory: Record<string, number>;
   };
 }
+
+export interface ITransaction {
+  id?: string;
+  email: string;
+  paymentRef: string;
+  amount: number;
+  paymentStatus: string;
+  transactionType: string;
+  user: {
+    id: string | number;
+    name: string;
+  };
+  createdBy?: string;
+  isDeleted?: boolean;
+  deletedAt?: boolean | null;
+  createdAt?: string;
+  updatedAt?: string;
+}

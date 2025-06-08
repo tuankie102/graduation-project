@@ -116,8 +116,9 @@ public class SubscriberService {
         }
     }
 
-    public Subscriber findByEmail(String email) {
-        return this.subscriberRepository.findByEmail(email).get();
+    public Optional<Subscriber> findByEmail(String email) {
+        Optional<Subscriber> subsOptional = this.subscriberRepository.findByEmail(email);
+        return subsOptional;
     }
 
     public void sendEmailForNewPost(Post post) {

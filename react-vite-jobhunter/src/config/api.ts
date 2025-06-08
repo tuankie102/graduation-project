@@ -16,6 +16,7 @@ import {
   ISkill,
   ISubscribers,
   IPost,
+  ITransaction,
 } from "@/types/backend";
 
 /**
@@ -267,7 +268,7 @@ export const callFetchResumeById = (id: string) => {
 };
 
 export const callFetchResumeByUser = () => {
-  return axios.post<IBackendRes<IModelPaginate<IResume>>>(
+  return axios.get<IBackendRes<IModelPaginate<IResume>>>(
     `/api/v1/resumes/by-user`
   );
 };
@@ -340,7 +341,7 @@ export const callCreateSubscriber = (subs: ISubscribers) => {
 };
 
 export const callGetSubscriberSkills = () => {
-  return axios.post<IBackendRes<ISubscribers>>("/api/v1/subscribers/skills");
+  return axios.get<IBackendRes<ISubscribers>>("/api/v1/subscribers/skills");
 };
 
 export const callUpdateSubscriber = (subs: ISubscribers) => {
@@ -404,4 +405,14 @@ export const callFetchStatistics = () => {
 export const callDeposit = async (amount: number) => {
   const res = await axios.post("/api/v1/payments/deposit", { amount });
   return res;
+};
+
+/**
+ * 
+Module Transaction
+ */
+export const callFetchTransactionsByUser = () => {
+  return axios.get<IBackendRes<IModelPaginate<ITransaction>>>(
+    `/api/v1/transactions/by-user`
+  );
 };

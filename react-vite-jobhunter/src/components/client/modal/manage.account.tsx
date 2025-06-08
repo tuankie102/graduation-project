@@ -11,10 +11,11 @@ import {
   notification,
   Input,
   InputNumber,
+  Tag,
 } from "antd";
 import { isMobile } from "react-device-detect";
 import type { TabsProps } from "antd";
-import { IResume, ISubscribers } from "@/types/backend";
+import { IResume, ISubscribers, ITransaction } from "@/types/backend";
 import { useState, useEffect } from "react";
 import {
   callCreateSubscriber,
@@ -25,6 +26,7 @@ import {
   callChangePassword,
   callUpdateUserInfo,
   callFetchAccount,
+  callFetchTransactionsByUser,
 } from "@/config/api";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -234,6 +236,102 @@ const UserUpdateInfo = () => {
         </Col>
       </Row>
     </Form>
+  );
+};
+
+const UserTransaction = () => {
+  const [listTransaction, setListTransaction] = useState<ITransaction[]>([]);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+
+  useEffect(() => {
+    const init = async () => {
+      setIsFetching(true);
+      const res = await callFetchTransactionsByUser();
+      if (res && res.data) {
+        setListTransaction(res.data.result as ITransaction[]);
+      }
+      setIsFetching(false);
+    };
+    init();
+  }, []);
+
+  const columns: ColumnsType<ITransaction> = [
+    {
+      title: "STT",
+      key: "index",
+      width: 50,
+      align: "center",
+      render: (text, record, index) => {
+        return <>{index + 1}</>;
+      },
+    },
+    {
+      title: "Mã giao dịch",
+      dataIndex: "paymentRef",
+      width: 200,
+    },
+    {
+      title: "Số tiền",
+      dataIndex: "amount",
+      width: 150,
+      render: (value) => {
+        const formattedValue = value
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return `${formattedValue} VNĐ`;
+      },
+    },
+    {
+      title: "Loại giao dịch",
+      dataIndex: "transactionType",
+      width: 150,
+      render: (value) => {
+        let color = "blue";
+        let text = "Nạp tiền";
+        if (value === "APPLY_FEE") {
+          color = "green";
+          text = "Phí ứng tuyển";
+        }
+        return <Tag color={color}>{text}</Tag>;
+      },
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "paymentStatus",
+      width: 120,
+      render: (value) => {
+        let color = "default";
+        let text = "Chờ thanh toán";
+        if (value === "SUCCESS") {
+          color = "success";
+          text = "Thành công";
+        } else if (value === "FAILED") {
+          color = "error";
+          text = "Thất bại";
+        }
+        return <Tag color={color}>{text}</Tag>;
+      },
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "createdAt",
+      width: 180,
+      render: (value) => {
+        return <>{dayjs(value).format("DD-MM-YYYY HH:mm:ss")}</>;
+      },
+    },
+  ];
+
+  return (
+    <div>
+      <Table<ITransaction>
+        columns={columns}
+        dataSource={listTransaction}
+        loading={isFetching}
+        pagination={false}
+        rowKey="id"
+      />
+    </div>
   );
 };
 
@@ -459,12 +557,17 @@ const ManageAccount = (props: IProps) => {
   const items: TabsProps["items"] = [
     {
       key: "user-resume",
-      label: `Ứng tuyển`,
+      label: `Lịch sử ứng tuyển`,
       children: <UserResume />,
     },
     {
+      key: "user-transaction",
+      label: `Lịch sử giao dịch`,
+      children: <UserTransaction />,
+    },
+    {
       key: "email-by-skills",
-      label: `Nhận Jobs qua Email`,
+      label: `Nhận việc qua Email`,
       children: <JobByEmail />,
     },
     {
