@@ -3,42 +3,9 @@ import CountUp from "react-countup";
 import { useState, useEffect } from "react";
 import { callFetchStatistics } from "@/config/api";
 import { IBackendRes } from "@/types/backend";
+import { Statistics } from "@/types/backend";
 import { FilePdfOutlined } from "@ant-design/icons";
 import jsPDF from "jspdf";
-
-interface Statistics {
-  userStatistics: {
-    totalUsers: number;
-    usersByRole: Record<string, number>;
-  };
-  jobStatistics: {
-    totalJobs: number;
-    activeJobs: number;
-    jobsByLocation: Record<string, number>;
-    jobsByCompany: Record<string, number>;
-    jobsByLevel: Record<string, number>;
-  };
-  resumeStatistics: {
-    totalResumes: number;
-    approvedResumes: number;
-    pendingResumes: number;
-    rejectedResumes: number;
-    resumesByStatus: Record<string, number>;
-  };
-  skillStatistics: {
-    topRequestedSkills: Array<{
-      name: string;
-      count: number;
-      approvedCount: number;
-    }>;
-    topResumeSkills: Array<{
-      name: string;
-      count: number;
-      approvedCount: number;
-    }>;
-    skillsByCategory: Record<string, number>;
-  };
-}
 
 const DashboardPage = () => {
   const [selectedStat, setSelectedStat] = useState("all");
@@ -83,140 +50,163 @@ const DashboardPage = () => {
 
   const stats = statistics?.data;
 
+  // Helper to format currency with comma and VNĐ
+  const formatVND = (amount: number) => amount.toLocaleString("vi-VN") + " VNĐ";
+
   const generatePDF = () => {
     if (!stats) return;
 
     const doc = new jsPDF();
-    // Add Roboto font
     doc.addFont("/src/assets/fonts/Roboto-Regular.ttf", "Roboto", "normal");
     doc.setFont("Roboto");
 
     const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 20;
+    const maxHeight = pageHeight - margin;
 
-    // Add header with background
-    doc.setFillColor(41, 128, 185); // Blue color
-    doc.rect(0, 0, pageWidth, 40, "F");
-
-    // Title
-    doc.setTextColor(255, 255, 255); // White color
-    doc.setFontSize(24);
-    doc.text("Báo cáo thống kê", pageWidth / 2, 25, { align: "center" });
-
-    // Date
+    // Header
+    doc.setFillColor(41, 128, 185);
+    doc.rect(0, 0, pageWidth, 50, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(28);
+    doc.text("Báo cáo thống kê", pageWidth / 2, 30, { align: "center" });
     doc.setFontSize(12);
-    const currentDate = new Date().toLocaleString("vi-VN");
-    doc.text(`Ngày tạo: ${currentDate}`, pageWidth - 10, 35, {
+    const currentDate = new Date().toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    doc.text(`Ngày tạo: ${currentDate}`, pageWidth - 20, 45, {
       align: "right",
       baseline: "middle",
     });
-
-    // Reset text color
     doc.setTextColor(0, 0, 0);
 
-    let y = 60;
-    const sectionSpacing = 15;
+    let y = 65;
+    const sectionSpacing = 10; // giảm spacing
     const itemSpacing = 8;
+    const sectionPadding = 8;
 
-    // Helper function to add section
-    const addSection = (title: string, content: () => void) => {
-      doc.setFillColor(240, 240, 240); // Light gray background
-      doc.rect(10, y - 5, pageWidth - 20, 15, "F");
+    // Helper: add new page if needed
+    const checkAndAddNewPage = (requiredHeight: number) => {
+      if (y + requiredHeight > maxHeight) {
+        doc.addPage();
+        y = margin;
+        return true;
+      }
+      return false;
+    };
 
+    // Helper: add a section as a single card
+    const addSection = (title: string, lines: string[]) => {
+      // Tính chiều cao card động
+      const cardHeight = sectionPadding * 2 + lines.length * itemSpacing + 16; // 16 cho header
+      checkAndAddNewPage(cardHeight + sectionSpacing);
+      // Card
+      doc.setFillColor(245, 245, 245);
+      doc.roundedRect(10, y, pageWidth - 20, cardHeight, 4, 4, "F");
+      doc.setDrawColor(41, 128, 185);
+      doc.roundedRect(10, y, pageWidth - 20, cardHeight, 4, 4);
+      // Section header
       doc.setFontSize(16);
-      doc.setTextColor(41, 128, 185); // Blue color
-      doc.text(title, 20, y);
-      y += sectionSpacing;
-
+      doc.setTextColor(41, 128, 185);
+      doc.text(title, 18, y + sectionPadding + 4);
+      // Section content
       doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0); // Black color
-      content();
-      y += sectionSpacing;
+      doc.setTextColor(0, 0, 0);
+      let contentY = y + sectionPadding + 16;
+      lines.forEach((line: string) => {
+        doc.text(line, 18, contentY);
+        contentY += itemSpacing;
+      });
+      y += cardHeight + sectionSpacing;
     };
 
     // User Statistics
-    addSection("Thống kê người dùng", () => {
-      doc.text(`Tổng số người dùng: ${stats.userStatistics.totalUsers}`, 20, y);
-      y += itemSpacing;
-
-      Object.entries(stats.userStatistics.usersByRole).forEach(
-        ([role, count]) => {
-          doc.text(`• ${role}: ${count}`, 30, y);
-          y += itemSpacing;
-        }
-      );
-    });
+    const userLines = [
+      `Tổng số người dùng: ${stats.userStatistics.totalUsers}`,
+      ...Object.entries(stats.userStatistics.usersByRole).map(
+        ([role, count]) => `• ${role}: ${count}`
+      ),
+    ];
+    addSection("Thống kê người dùng", userLines);
 
     // Job Statistics
-    addSection("Thống kê công việc", () => {
-      doc.text(`Tổng số công việc: ${stats.jobStatistics.totalJobs}`, 20, y);
-      y += itemSpacing;
-      doc.text(
-        `Công việc đang hoạt động: ${stats.jobStatistics.activeJobs}`,
-        20,
-        y
-      );
-      y += itemSpacing * 2;
-
-      doc.text("Công việc theo cấp độ:", 20, y);
-      y += itemSpacing;
-      Object.entries(stats.jobStatistics.jobsByLevel).forEach(
-        ([level, count]) => {
-          doc.text(`• ${level}: ${count}`, 30, y);
-          y += itemSpacing;
-        }
-      );
-      y += itemSpacing;
-
-      doc.text("Công việc theo công ty:", 20, y);
-      y += itemSpacing;
-      Object.entries(stats.jobStatistics.jobsByCompany).forEach(
-        ([company, count]) => {
-          doc.text(`• ${company}: ${count}`, 30, y);
-          y += itemSpacing;
-        }
-      );
-    });
+    const jobLines = [
+      `Tổng số công việc: ${stats.jobStatistics.totalJobs}`,
+      `Công việc đang hoạt động: ${stats.jobStatistics.activeJobs}`,
+      "Công việc theo cấp độ:",
+      ...Object.entries(stats.jobStatistics.jobsByLevel).map(
+        ([level, count]) => `   • ${level}: ${count}`
+      ),
+      "Công việc theo công ty:",
+      ...Object.entries(stats.jobStatistics.jobsByCompany).map(
+        ([company, count]) => `   • ${company}: ${count}`
+      ),
+    ];
+    addSection("Thống kê công việc", jobLines);
 
     // Resume Statistics
-    addSection("Thống kê hồ sơ", () => {
-      doc.text(`Tổng số hồ sơ: ${stats.resumeStatistics.totalResumes}`, 20, y);
-      y += itemSpacing;
-      doc.text(
-        `Hồ sơ đã duyệt: ${stats.resumeStatistics.approvedResumes}`,
-        20,
-        y
-      );
-      y += itemSpacing;
-      doc.text(
-        `Hồ sơ đang chờ: ${stats.resumeStatistics.pendingResumes}`,
-        20,
-        y
-      );
-      y += itemSpacing;
-      doc.text(
-        `Hồ sơ bị từ chối: ${stats.resumeStatistics.rejectedResumes}`,
-        20,
-        y
-      );
-    });
+    const resumeLines = [
+      `Tổng số hồ sơ: ${stats.resumeStatistics.totalResumes}`,
+      `Hồ sơ đã duyệt: ${stats.resumeStatistics.approvedResumes}`,
+      `Hồ sơ đang chờ: ${stats.resumeStatistics.pendingResumes}`,
+      `Hồ sơ bị từ chối: ${stats.resumeStatistics.rejectedResumes}`,
+    ];
+    addSection("Thống kê hồ sơ", resumeLines);
 
     // Skill Statistics
-    addSection("Thống kê kỹ năng", () => {
-      doc.text("Top kỹ năng được yêu cầu:", 20, y);
-      y += itemSpacing;
-      stats.skillStatistics.topRequestedSkills.forEach((skill) => {
-        doc.text(`• ${skill.name}: ${skill.count}`, 30, y);
-        y += itemSpacing;
-      });
-      y += itemSpacing;
+    const skillLines = [
+      "Top kỹ năng được yêu cầu:",
+      ...stats.skillStatistics.topRequestedSkills.map(
+        (skill) => `   • ${skill.name}: ${skill.count}`
+      ),
+      "Top kỹ năng trong hồ sơ:",
+      ...stats.skillStatistics.topResumeSkills.map(
+        (skill) => `   • ${skill.name}: ${skill.count}`
+      ),
+    ];
+    addSection("Thống kê kỹ năng", skillLines);
 
-      doc.text("Top kỹ năng trong hồ sơ:", 20, y);
-      y += itemSpacing;
-      stats.skillStatistics.topResumeSkills.forEach((skill) => {
-        doc.text(`• ${skill.name}: ${skill.count}`, 30, y);
-        y += itemSpacing;
-      });
-    });
+    // Transaction Statistics
+    const transactionLines = [
+      `Tổng số dư khả dụng: ${formatVND(
+        stats.transactionStatistics.totalAvailableBalance
+      )}`,
+      `Tổng số giao dịch: ${stats.transactionStatistics.totalTransactions}`,
+      `Tổng doanh thu nạp tiền: ${formatVND(
+        stats.transactionStatistics.totalDepositRevenue
+      )}`,
+      `Tổng số giao dịch phí ứng tuyển: ${stats.transactionStatistics.totalApplyFeeTransactions}`,
+      `Tổng tiền phí ứng tuyển: ${formatVND(
+        stats.transactionStatistics.totalApplyFeeAmount
+      )}`,
+      `Tổng số giao dịch phí đăng bài: ${stats.transactionStatistics.totalPostFeeTransactions}`,
+      `Tổng tiền phí đăng bài: ${formatVND(
+        stats.transactionStatistics.totalPostFeeAmount
+      )}`,
+      "Giao dịch theo trạng thái:",
+      ...Object.entries(
+        stats.transactionStatistics.transactionsByStatus
+      ).flatMap(([status, count]) => [
+        `   • ${
+          status === "SUCCESS"
+            ? "Thành công"
+            : status === "FAILED"
+            ? "Thất bại"
+            : status === "UNPAID"
+            ? "Chưa thanh toán"
+            : "Thanh toán thất bại"
+        }: ${count}`,
+        `     Tổng tiền: ${formatVND(
+          stats.transactionStatistics.revenueByStatus[status]
+        )}`,
+      ]),
+    ];
+    addSection("Thống kê giao dịch", transactionLines);
 
     doc.save("thong-ke.pdf");
   };
@@ -238,6 +228,7 @@ const DashboardPage = () => {
                     { value: "jobs", label: "Thống kê công việc" },
                     { value: "resumes", label: "Thống kê hồ sơ" },
                     { value: "skills", label: "Thống kê kỹ năng" },
+                    { value: "transactions", label: "Thống kê giao dịch" },
                   ]}
                 />
                 <Button
@@ -415,6 +406,148 @@ const DashboardPage = () => {
                         </Col>
                       )
                     )}
+                  </Row>
+                </Col>
+              </Row>
+            </Card>
+          )}
+
+        {(selectedStat === "all" || selectedStat === "transactions") &&
+          stats?.transactionStatistics && (
+            <Card title="Thống kê giao dịch" bordered={false}>
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Statistic
+                    title="Tổng số giao dịch"
+                    value={stats.transactionStatistics.totalTransactions}
+                    formatter={formatter}
+                  />
+                </Col>
+                <Col span={12}>
+                  <Statistic
+                    title="Tổng doanh thu nạp tiền"
+                    value={stats.transactionStatistics.totalDepositRevenue}
+                    formatter={(value) => {
+                      return (
+                        <CountUp
+                          end={Number(value)}
+                          separator=","
+                          suffix=" VNĐ"
+                        />
+                      );
+                    }}
+                  />
+                </Col>
+              </Row>
+
+              <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
+                <Col span={12}>
+                  <Statistic
+                    title="Tổng số giao dịch phí ứng tuyển"
+                    value={
+                      stats.transactionStatistics.totalApplyFeeTransactions
+                    }
+                    formatter={formatter}
+                  />
+                </Col>
+                <Col span={12}>
+                  <Statistic
+                    title="Tổng tiền phí ứng tuyển"
+                    value={stats.transactionStatistics.totalApplyFeeAmount}
+                    formatter={(value) => {
+                      return (
+                        <CountUp
+                          end={Number(value)}
+                          separator=","
+                          suffix=" VNĐ"
+                        />
+                      );
+                    }}
+                  />
+                </Col>
+              </Row>
+
+              <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
+                <Col span={12}>
+                  <Statistic
+                    title="Tổng số giao dịch phí đăng bài"
+                    value={stats.transactionStatistics.totalPostFeeTransactions}
+                    formatter={formatter}
+                  />
+                </Col>
+                <Col span={12}>
+                  <Statistic
+                    title="Tổng tiền phí đăng bài"
+                    value={stats.transactionStatistics.totalPostFeeAmount}
+                    formatter={(value) => {
+                      return (
+                        <CountUp
+                          end={Number(value)}
+                          separator=","
+                          suffix=" VNĐ"
+                        />
+                      );
+                    }}
+                  />
+                </Col>
+              </Row>
+
+              <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
+                <Col span={24}>
+                  <Statistic
+                    title="Tổng tiền còn lưu động"
+                    value={stats.transactionStatistics.totalAvailableBalance}
+                    formatter={(value) => {
+                      return (
+                        <CountUp
+                          end={Number(value)}
+                          separator=","
+                          suffix=" VNĐ"
+                        />
+                      );
+                    }}
+                  />
+                </Col>
+              </Row>
+
+              <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
+                <Col span={24}>
+                  <h3>Giao dịch theo trạng thái</h3>
+                  <Row gutter={[16, 16]}>
+                    {Object.entries(
+                      stats.transactionStatistics.transactionsByStatus
+                    ).map(([status, count]) => (
+                      <Col span={6} key={status}>
+                        <Statistic
+                          title={
+                            status === "SUCCESS"
+                              ? "Thành công"
+                              : status === "FAILED"
+                              ? "Thất bại"
+                              : status === "UNPAID"
+                              ? "Chưa thanh toán"
+                              : "Thanh toán thất bại"
+                          }
+                          value={count}
+                          suffix=" giao dịch"
+                        />
+                        <Statistic
+                          style={{ marginTop: "8px" }}
+                          value={
+                            stats.transactionStatistics.revenueByStatus[status]
+                          }
+                          formatter={(value) => {
+                            return (
+                              <CountUp
+                                end={Number(value)}
+                                separator=","
+                                suffix=" VNĐ"
+                              />
+                            );
+                          }}
+                        />
+                      </Col>
+                    ))}
                   </Row>
                 </Col>
               </Row>

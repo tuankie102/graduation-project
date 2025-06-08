@@ -3,10 +3,13 @@ package vn.tuankiet.jobhunter.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import vn.tuankiet.jobhunter.domain.Transaction;
 import vn.tuankiet.jobhunter.domain.response.StatisticsDTO;
 import vn.tuankiet.jobhunter.repository.*;
 import vn.tuankiet.jobhunter.util.constant.ResumeStateEnum;
 import vn.tuankiet.jobhunter.util.constant.LevelEnum;
+import vn.tuankiet.jobhunter.util.constant.PaymentStatusEnum;
+import vn.tuankiet.jobhunter.util.constant.TransactionTypeEnum;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,7 @@ public class StatisticsService {
     private final JobRepository jobRepository;
     private final ResumeRepository resumeRepository;
     private final SkillRepository skillRepository;
+    private final TransactionRepository transactionRepository;
 
     
     public StatisticsDTO getAllStatistics() {
@@ -28,6 +32,7 @@ public class StatisticsService {
         statistics.setJobStatistics(getJobStatistics());
         statistics.setResumeStatistics(getResumeStatistics());
         statistics.setSkillStatistics(getSkillStatistics());
+        statistics.setTransactionStatistics(getTransactionStatistics());
         return statistics;
     }
 
@@ -121,6 +126,68 @@ public class StatisticsService {
                 Collectors.counting()
             ));
         statistics.setSkillsByCategory(skillsByCategory);
+
+        return statistics;
+    }
+
+    public StatisticsDTO.TransactionStatistics getTransactionStatistics() {
+        StatisticsDTO.TransactionStatistics statistics = new StatisticsDTO.TransactionStatistics();
+        List<Transaction> allTransactions = transactionRepository.findAll();
+        
+        // Get total transactions
+        statistics.setTotalTransactions(allTransactions.size());
+        
+        // Calculate total deposit revenue (only successful deposits)
+        double totalDepositRevenue = allTransactions.stream()
+            .filter(t -> t.getTransactionType() == TransactionTypeEnum.DEPOSIT && 
+                        t.getPaymentStatus() == PaymentStatusEnum.SUCCESS)
+            .mapToDouble(t -> t.getAmount())
+            .sum();
+        statistics.setTotalDepositRevenue(totalDepositRevenue);
+
+        // Calculate apply fee statistics
+        long totalApplyFeeTransactions = allTransactions.stream()
+            .filter(t -> t.getTransactionType() == TransactionTypeEnum.APPLY_FEE)
+            .count();
+        double totalApplyFeeAmount = allTransactions.stream()
+            .filter(t -> t.getTransactionType() == TransactionTypeEnum.APPLY_FEE)
+            .mapToDouble(t -> t.getAmount())
+            .sum();
+        statistics.setTotalApplyFeeTransactions(totalApplyFeeTransactions);
+        statistics.setTotalApplyFeeAmount(totalApplyFeeAmount);
+
+        // Calculate post fee statistics
+        long totalPostFeeTransactions = allTransactions.stream()
+            .filter(t -> t.getTransactionType() == TransactionTypeEnum.POST_FEE)
+            .count();
+        double totalPostFeeAmount = allTransactions.stream()
+            .filter(t -> t.getTransactionType() == TransactionTypeEnum.POST_FEE)
+            .mapToDouble(t -> t.getAmount())
+            .sum();
+        statistics.setTotalPostFeeTransactions(totalPostFeeTransactions);
+        statistics.setTotalPostFeeAmount(totalPostFeeAmount);
+
+        // Calculate total available balance from user balances
+        double totalAvailableBalance = userRepository.findAll().stream()
+            .mapToDouble(user -> user.getBalance())
+            .sum();
+        statistics.setTotalAvailableBalance(totalAvailableBalance);
+
+        // Get transactions by status
+        Map<PaymentStatusEnum, Long> transactionsByStatus = allTransactions.stream()
+            .collect(Collectors.groupingBy(
+                transaction -> transaction.getPaymentStatus(),
+                Collectors.counting()
+            ));
+        statistics.setTransactionsByStatus(transactionsByStatus);
+
+        // Calculate revenue by status
+        Map<PaymentStatusEnum, Double> revenueByStatus = allTransactions.stream()
+            .collect(Collectors.groupingBy(
+                transaction -> transaction.getPaymentStatus(),
+                Collectors.summingDouble(transaction -> transaction.getAmount())
+            ));
+        statistics.setRevenueByStatus(revenueByStatus);
 
         return statistics;
     }

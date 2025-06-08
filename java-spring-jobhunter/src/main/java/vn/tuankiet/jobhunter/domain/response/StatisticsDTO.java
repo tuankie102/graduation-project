@@ -7,6 +7,8 @@ import lombok.Setter;
 import java.util.List;
 import java.util.Map;
 import vn.tuankiet.jobhunter.util.constant.ResumeStateEnum;
+import vn.tuankiet.jobhunter.util.constant.PaymentStatusEnum;
+import vn.tuankiet.jobhunter.util.constant.TransactionTypeEnum;
 
 @Getter
 @Setter
@@ -17,6 +19,7 @@ public class StatisticsDTO {
     private JobStatistics jobStatistics;
     private ResumeStatistics resumeStatistics;
     private SkillStatistics skillStatistics;
+    private TransactionStatistics transactionStatistics;
 
     @Getter
     @Setter
@@ -69,5 +72,21 @@ public class StatisticsDTO {
         private String name;
         private long count;
         private long approvedCount;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TransactionStatistics {
+        private long totalTransactions;
+        private double totalDepositRevenue;
+        private long totalApplyFeeTransactions;
+        private double totalApplyFeeAmount;
+        private long totalPostFeeTransactions;
+        private double totalPostFeeAmount;
+        private double totalAvailableBalance;
+        private Map<PaymentStatusEnum, Long> transactionsByStatus;
+        private Map<PaymentStatusEnum, Double> revenueByStatus;
     }
 } 

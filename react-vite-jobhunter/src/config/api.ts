@@ -6,7 +6,7 @@ import {
   IResume,
   IUser,
   Statistics,
-} from "../types/backend";
+} from "@/types/backend";
 import {
   IAccount,
   IModelPaginate,

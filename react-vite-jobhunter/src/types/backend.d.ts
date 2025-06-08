@@ -256,6 +256,17 @@ export interface Statistics {
     }>;
     skillsByCategory: Record<string, number>;
   };
+  transactionStatistics: {
+    totalTransactions: number;
+    transactionsByStatus: Record<string, number>;
+    revenueByStatus: Record<string, number>;
+    totalDepositRevenue: number;
+    totalApplyFeeTransactions: number;
+    totalApplyFeeAmount: number;
+    totalPostFeeTransactions: number;
+    totalPostFeeAmount: number;
+    totalAvailableBalance: number;
+  };
 }
 
 export interface ITransaction {
