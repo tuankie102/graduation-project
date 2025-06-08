@@ -55,22 +55,20 @@ const DashboardPage = () => {
 
   const generatePDF = () => {
     if (!stats) return;
-
     const doc = new jsPDF();
     doc.addFont("/src/assets/fonts/Roboto-Regular.ttf", "Roboto", "normal");
     doc.setFont("Roboto");
-
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
     const margin = 20;
     const maxHeight = pageHeight - margin;
-
-    // Header
     doc.setFillColor(41, 128, 185);
     doc.rect(0, 0, pageWidth, 50, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(28);
-    doc.text("Báo cáo thống kê", pageWidth / 2, 30, { align: "center" });
+    doc.text("Báo cáo thống kê - JobHunter", pageWidth / 2, 30, {
+      align: "center",
+    });
     doc.setFontSize(12);
     const currentDate = new Date().toLocaleString("vi-VN", {
       year: "numeric",
@@ -84,13 +82,10 @@ const DashboardPage = () => {
       baseline: "middle",
     });
     doc.setTextColor(0, 0, 0);
-
     let y = 65;
-    const sectionSpacing = 10; // giảm spacing
+    const sectionSpacing = 10;
     const itemSpacing = 8;
     const sectionPadding = 8;
-
-    // Helper: add new page if needed
     const checkAndAddNewPage = (requiredHeight: number) => {
       if (y + requiredHeight > maxHeight) {
         doc.addPage();
@@ -99,22 +94,16 @@ const DashboardPage = () => {
       }
       return false;
     };
-
-    // Helper: add a section as a single card
     const addSection = (title: string, lines: string[]) => {
-      // Tính chiều cao card động
-      const cardHeight = sectionPadding * 2 + lines.length * itemSpacing + 16; // 16 cho header
+      const cardHeight = sectionPadding * 2 + lines.length * itemSpacing + 16;
       checkAndAddNewPage(cardHeight + sectionSpacing);
-      // Card
       doc.setFillColor(245, 245, 245);
       doc.roundedRect(10, y, pageWidth - 20, cardHeight, 4, 4, "F");
       doc.setDrawColor(41, 128, 185);
       doc.roundedRect(10, y, pageWidth - 20, cardHeight, 4, 4);
-      // Section header
       doc.setFontSize(16);
       doc.setTextColor(41, 128, 185);
       doc.text(title, 18, y + sectionPadding + 4);
-      // Section content
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
       let contentY = y + sectionPadding + 16;
@@ -124,17 +113,13 @@ const DashboardPage = () => {
       });
       y += cardHeight + sectionSpacing;
     };
-
-    // User Statistics
+    // Prepare data for each section
     const userLines = [
       `Tổng số người dùng: ${stats.userStatistics.totalUsers}`,
       ...Object.entries(stats.userStatistics.usersByRole).map(
         ([role, count]) => `• ${role}: ${count}`
       ),
     ];
-    addSection("Thống kê người dùng", userLines);
-
-    // Job Statistics
     const jobLines = [
       `Tổng số công việc: ${stats.jobStatistics.totalJobs}`,
       `Công việc đang hoạt động: ${stats.jobStatistics.activeJobs}`,
@@ -147,18 +132,12 @@ const DashboardPage = () => {
         ([company, count]) => `   • ${company}: ${count}`
       ),
     ];
-    addSection("Thống kê công việc", jobLines);
-
-    // Resume Statistics
     const resumeLines = [
       `Tổng số hồ sơ: ${stats.resumeStatistics.totalResumes}`,
       `Hồ sơ đã duyệt: ${stats.resumeStatistics.approvedResumes}`,
       `Hồ sơ đang chờ: ${stats.resumeStatistics.pendingResumes}`,
       `Hồ sơ bị từ chối: ${stats.resumeStatistics.rejectedResumes}`,
     ];
-    addSection("Thống kê hồ sơ", resumeLines);
-
-    // Skill Statistics
     const skillLines = [
       "Top kỹ năng được yêu cầu:",
       ...stats.skillStatistics.topRequestedSkills.map(
@@ -169,9 +148,6 @@ const DashboardPage = () => {
         (skill) => `   • ${skill.name}: ${skill.count}`
       ),
     ];
-    addSection("Thống kê kỹ năng", skillLines);
-
-    // Transaction Statistics
     const transactionLines = [
       `Tổng số dư khả dụng: ${formatVND(
         stats.transactionStatistics.totalAvailableBalance
@@ -206,8 +182,24 @@ const DashboardPage = () => {
         )}`,
       ]),
     ];
-    addSection("Thống kê giao dịch", transactionLines);
-
+    // Export only the selected section
+    if (selectedStat === "all") {
+      addSection("Thống kê người dùng", userLines);
+      addSection("Thống kê công việc", jobLines);
+      addSection("Thống kê hồ sơ", resumeLines);
+      addSection("Thống kê kỹ năng", skillLines);
+      addSection("Thống kê giao dịch", transactionLines);
+    } else if (selectedStat === "users") {
+      addSection("Thống kê người dùng", userLines);
+    } else if (selectedStat === "jobs") {
+      addSection("Thống kê công việc", jobLines);
+    } else if (selectedStat === "resumes") {
+      addSection("Thống kê hồ sơ", resumeLines);
+    } else if (selectedStat === "skills") {
+      addSection("Thống kê kỹ năng", skillLines);
+    } else if (selectedStat === "transactions") {
+      addSection("Thống kê giao dịch", transactionLines);
+    }
     doc.save("thong-ke.pdf");
   };
 
