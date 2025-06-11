@@ -124,7 +124,7 @@ const ViewDetailResume = (props: IProps) => {
             type="primary"
             onClick={handleChangeStatus}
           >
-            Change Status
+            Cập nhật
           </Button>
         }
       >

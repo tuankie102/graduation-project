@@ -34,6 +34,7 @@ import ViewUpsertPost from "./components/admin/post/upsert.post";
 import ClientPostPage from "./pages/post";
 import ClientPostDetailPage from "./pages/post/detail";
 import { message } from "antd";
+import ClientJobPage from "./pages/job";
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,6 +110,7 @@ export default function App() {
       children: [
         { index: true, element: <HomePage /> },
         { path: "post", element: <ClientPostPage /> },
+        { path: "job", element: <ClientJobPage /> },
         { path: "post/:id", element: <ClientPostDetailPage /> },
         { path: "company", element: <ClientCompanyPage /> },
         { path: "company/:id", element: <ClientCompanyDetailPage /> },
