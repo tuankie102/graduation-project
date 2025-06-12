@@ -21,6 +21,8 @@ public class ResFetchPostDTO {
     private String createdBy;
     private String updatedBy;
 
+    private Long applyCount;
+
     private JobPost job;
 
     @Getter

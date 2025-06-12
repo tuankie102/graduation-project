@@ -191,6 +191,7 @@ export interface IPost {
   startDate: Date;
   endDate: Date;
   active: boolean;
+  applyCount?: number;
   job?: {
     id: string;
     name?: string;

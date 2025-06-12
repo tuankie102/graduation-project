@@ -18,4 +18,6 @@ public interface ResumeRepository extends JpaRepository<Resume, Long>,
 
     long countByUserIdAndPostId(Long userId, Long postId);
 
+    long countByPostId(Long postId);
+
 }

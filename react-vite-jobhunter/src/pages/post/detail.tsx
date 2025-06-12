@@ -87,7 +87,10 @@ const ClientPostDetailPage = (props: any) => {
                 </div>
                 <div className={styles["location"]}>
                   <TeamOutlined />
-                  <span>&nbsp;{postDetail.job?.quantity || 1} người</span>
+                  <span>
+                    &nbsp;{postDetail.applyCount || 0}
+                    &nbsp;ứng viên / {postDetail.job?.quantity || 1} chỉ tiêu
+                  </span>
                 </div>
                 <div className={styles["location"]}>
                   <RiseOutlined style={{ color: "#1890ff" }} />

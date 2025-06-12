@@ -149,6 +149,9 @@ public class PostService {
         dto.setCreatedBy(post.getCreatedBy());
         dto.setUpdatedBy(post.getUpdatedBy());
 
+        // Set apply count
+        dto.setApplyCount(this.resumeRepository.countByPostId(post.getId()));
+
         // Set company name if job and company exist
         ResFetchPostDTO.CompanyPost company = null;
         if (post.getJob() != null && post.getJob().getCompany() != null) {

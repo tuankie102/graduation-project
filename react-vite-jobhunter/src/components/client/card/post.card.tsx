@@ -3,6 +3,8 @@ import { convertSlug, getLocationName } from "@/config/utils";
 import { IJob, IPost } from "@/types/backend";
 import {
   EnvironmentOutlined,
+  FileTextOutlined,
+  TeamOutlined,
   ThunderboltOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -110,7 +112,7 @@ const PostCard = (props: IProps) => {
                   isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]
                 }
               >
-                <span className={styles["title"]}>Bài đăng mới nhất</span>
+                <h2 className={styles["title"]}>Bài đăng mới nhất</h2>
                 {!showPagination && <Link to="post">Xem tất cả</Link>}
               </div>
             </Col>
@@ -150,6 +152,10 @@ const PostCard = (props: IProps) => {
                               ","
                             )}{" "}
                             đ
+                          </div>
+                          <div className={styles["job-apply-count"]}>
+                            <TeamOutlined /> {item.applyCount || 0}
+                            &nbsp;ứng viên / {item.job?.quantity || 0} chỉ tiêu
                           </div>
                           <div className={styles["job-updatedAt"]}>
                             {item.createdAt
