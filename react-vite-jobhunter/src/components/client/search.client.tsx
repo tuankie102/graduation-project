@@ -72,7 +72,7 @@ const SearchClient = () => {
       });
       return;
     }
-    navigate(`/job?${query}`);
+    navigate(`/post?${query}`);
   };
 
   return (

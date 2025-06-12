@@ -64,13 +64,13 @@ const PostCard = (props: IProps) => {
     if (queryLocation || querySkills) {
       let q = "";
       if (queryLocation) {
-        q = sfIn("location", queryLocation.split(",")).toString();
+        q = sfIn("job.location", queryLocation.split(",")).toString();
       }
 
       if (querySkills) {
         q = queryLocation
-          ? q + " and " + `${sfIn("skills", querySkills.split(","))}`
-          : `${sfIn("skills", querySkills.split(","))}`;
+          ? q + " and " + `${sfIn("job.skills", querySkills.split(","))}`
+          : `${sfIn("job.skills", querySkills.split(","))}`;
       }
 
       query += `&filter=${encodeURIComponent(q)}`;
