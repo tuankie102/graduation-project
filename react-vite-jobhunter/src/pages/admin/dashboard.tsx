@@ -117,7 +117,16 @@ const DashboardPage = () => {
     const userLines = [
       `Tổng số người dùng: ${stats.userStatistics.totalUsers}`,
       ...Object.entries(stats.userStatistics.usersByRole).map(
-        ([role, count]) => `• ${role}: ${count}`
+        ([role, count]) =>
+          `• ${
+            role === "SUPER_ADMIN"
+              ? "Quản trị viên cao cấp"
+              : role === "NORMAL_USER"
+              ? "Người dùng thường"
+              : role === "HR"
+              ? "Nhà tuyển dụng"
+              : role
+          }: ${count}`
       ),
     ];
     const jobLines = [
@@ -139,11 +148,11 @@ const DashboardPage = () => {
       `Hồ sơ bị từ chối: ${stats.resumeStatistics.rejectedResumes}`,
     ];
     const skillLines = [
-      "Top kỹ năng được yêu cầu:",
+      "Top kỹ năng được yêu cầu (là những kỹ năng được tuyển dụng nhiều nhất):",
       ...stats.skillStatistics.topRequestedSkills.map(
         (skill) => `   • ${skill.name}: ${skill.count}`
       ),
-      "Top kỹ năng trong hồ sơ:",
+      "Top kỹ năng được phê duyệt (là các kỹ năng nằm trong các hồ sơ xin việc được duyệt):",
       ...stats.skillStatistics.topResumeSkills.map(
         (skill) => `   • ${skill.name}: ${skill.count}`
       ),
@@ -369,7 +378,19 @@ const DashboardPage = () => {
             <Card title="Thống kê kỹ năng" bordered={false}>
               <Row gutter={[16, 16]}>
                 <Col span={24}>
-                  <h3>Top kỹ năng được yêu cầu</h3>
+                  <h3>
+                    Top kỹ năng được yêu cầu
+                    <span
+                      style={{
+                        color: "#888",
+                        fontStyle: "italic",
+                        fontWeight: 400,
+                        marginLeft: 8,
+                      }}
+                    >
+                      (là những kỹ năng được tuyển dụng nhiều nhất)
+                    </span>
+                  </h3>
                   <Row gutter={[16, 16]}>
                     {stats.skillStatistics.topRequestedSkills.map(
                       (skill, index) => (
@@ -384,8 +405,21 @@ const DashboardPage = () => {
                     )}
                   </Row>
                 </Col>
-                <Col span={24}>
-                  <h3>Top kỹ năng trong hồ sơ</h3>
+                <Col span={24} style={{ marginTop: 24 }}>
+                  <h3>
+                    Top kỹ năng được phê duyệt
+                    <span
+                      style={{
+                        color: "#888",
+                        fontStyle: "italic",
+                        fontWeight: 400,
+                        marginLeft: 8,
+                      }}
+                    >
+                      (là các top kỹ năng nằm trong các hồ sơ xin việc được
+                      duyệt)
+                    </span>
+                  </h3>
                   <Row gutter={[16, 16]}>
                     {stats.skillStatistics.topResumeSkills.map(
                       (skill, index) => (
