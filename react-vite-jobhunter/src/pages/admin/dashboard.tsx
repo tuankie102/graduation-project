@@ -1,4 +1,14 @@
-import { Card, Col, Row, Statistic, Select, Space, Spin, Button } from "antd";
+import {
+  Card,
+  Col,
+  Row,
+  Statistic,
+  Select,
+  Space,
+  Spin,
+  Button,
+  DatePicker,
+} from "antd";
 import CountUp from "react-countup";
 import { useState, useEffect } from "react";
 import { callFetchStatistics } from "@/config/api";
@@ -6,6 +16,7 @@ import { IBackendRes } from "@/types/backend";
 import { Statistics } from "@/types/backend";
 import { FilePdfOutlined } from "@ant-design/icons";
 import jsPDF from "jspdf";
+import dayjs, { Dayjs } from "dayjs";
 
 const DashboardPage = () => {
   const [selectedStat, setSelectedStat] = useState("all");
@@ -13,11 +24,17 @@ const DashboardPage = () => {
     null
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [dateRange, setDateRange] = useState<[string, string] | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await callFetchStatistics();
+        let query = "";
+        if (dateRange) {
+          query = `filter=createdAt >= '${dateRange[0]}' and createdAt <= '${dateRange[1]}'`;
+          console.log(query);
+        }
+        const response = await callFetchStatistics(query);
         setStatistics(response);
       } catch (error) {
         console.error("Error fetching statistics:", error);
@@ -27,7 +44,7 @@ const DashboardPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [dateRange]);
 
   const formatter = (value: number | string) => {
     return <CountUp end={Number(value)} separator="," />;
@@ -158,7 +175,7 @@ const DashboardPage = () => {
       ),
     ];
     const transactionLines = [
-      `Tổng số dư khả dụng: ${formatVND(
+      `Tổng tiền còn lưu động: ${formatVND(
         stats.transactionStatistics.totalAvailableBalance
       )}`,
       `Tổng số giao dịch: ${stats.transactionStatistics.totalTransactions}`,
@@ -219,6 +236,20 @@ const DashboardPage = () => {
           <Col span={24}>
             <Card>
               <Space>
+                <DatePicker.RangePicker
+                  onChange={(dates) => {
+                    if (dates && dates[0] && dates[1]) {
+                      setDateRange([
+                        dates[0].toISOString(),
+                        dates[1].toISOString(),
+                      ]);
+                    } else {
+                      setDateRange(null);
+                    }
+                  }}
+                  allowClear
+                  placeholder={["Start date", "End date"]}
+                />
                 <Select
                   style={{ width: 200 }}
                   value={selectedStat}

@@ -398,8 +398,10 @@ export const callFetchPostById = (id: string) => {
  * 
 Module Statistics
  */
-export const callFetchStatistics = () => {
-  return axios.get<IBackendRes<Statistics>>("/api/v1/statistics");
+export const callFetchStatistics = (query?: string) => {
+  return axios.get<IBackendRes<Statistics>>(
+    `/api/v1/statistics${query ? `?${query}` : ""}`
+  );
 };
 
 export const callDeposit = async (amount: number) => {
