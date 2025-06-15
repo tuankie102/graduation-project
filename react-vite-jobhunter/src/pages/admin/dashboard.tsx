@@ -98,6 +98,22 @@ const DashboardPage = () => {
       align: "right",
       baseline: "middle",
     });
+    if (dateRange) {
+      const startDate = new Date(dateRange[0]).toLocaleString("vi-VN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      const endDate = new Date(dateRange[1]).toLocaleString("vi-VN", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      doc.text(`${startDate} - ${endDate}`, 135, 35, {
+        align: "left",
+        baseline: "middle",
+      });
+    }
     doc.setTextColor(0, 0, 0);
     let y = 65;
     const sectionSpacing = 10;
@@ -162,6 +178,7 @@ const DashboardPage = () => {
       `Tổng số hồ sơ: ${stats.resumeStatistics.totalResumes}`,
       `Hồ sơ đã duyệt: ${stats.resumeStatistics.approvedResumes}`,
       `Hồ sơ đang chờ: ${stats.resumeStatistics.pendingResumes}`,
+      `Hồ sơ đang xem xét: ${stats.resumeStatistics.reviewingResumes}`,
       `Hồ sơ bị từ chối: ${stats.resumeStatistics.rejectedResumes}`,
     ];
     const skillLines = [
@@ -390,6 +407,13 @@ const DashboardPage = () => {
                   <Statistic
                     title="Hồ sơ đang chờ"
                     value={stats.resumeStatistics.pendingResumes}
+                    formatter={formatter}
+                  />
+                </Col>
+                <Col span={6}>
+                  <Statistic
+                    title="Hồ sơ đang xem xét"
+                    value={stats.resumeStatistics.reviewingResumes}
                     formatter={formatter}
                   />
                 </Col>

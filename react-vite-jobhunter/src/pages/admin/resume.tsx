@@ -6,7 +6,7 @@ import {
   ProColumns,
   ProFormSelect,
 } from "@ant-design/pro-components";
-import { Space, message, notification } from "antd";
+import { Space, message, notification, Tag } from "antd";
 import { useState, useRef } from "react";
 import dayjs from "dayjs";
 import { callDeleteResume } from "@/config/api";
@@ -72,16 +72,30 @@ const ResumePage = () => {
       title: "Trạng Thái",
       dataIndex: "status",
       sorter: true,
+      render: (text, record) => {
+        const statusMap: Record<string, { text: string; color: string }> = {
+          PENDING: { text: "Chờ duyệt", color: "warning" },
+          REVIEWING: { text: "Đang xem xét", color: "processing" },
+          APPROVED: { text: "Đã duyệt", color: "success" },
+          REJECTED: { text: "Từ chối", color: "error" },
+        };
+        const status = statusMap[record.status];
+        return status ? (
+          <Tag color={status.color}>{status.text}</Tag>
+        ) : (
+          <Tag>{record.status}</Tag>
+        );
+      },
       renderFormItem: (item, props, form) => (
         <ProFormSelect
           showSearch
           mode="multiple"
           allowClear
           valueEnum={{
-            PENDING: "PENDING",
-            REVIEWING: "REVIEWING",
-            APPROVED: "APPROVED",
-            REJECTED: "REJECTED",
+            PENDING: "Chờ duyệt",
+            REVIEWING: "Đang xem xét",
+            APPROVED: "Đã duyệt",
+            REJECTED: "Từ chối",
           }}
           placeholder="Chọn trạng thái"
         />

@@ -50,6 +50,8 @@ const PostCard = (props: IProps) => {
 
   const fetchPost = async () => {
     setIsLoading(true);
+    // Tăng size lên để đảm bảo có đủ post active sau khi lọc
+    const adjustedSize = pageSize * 2;
     let query = `page=${current}&size=${pageSize}`;
     if (filter) {
       query += `&${filter}`;

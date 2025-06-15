@@ -50,6 +50,7 @@ public class StatisticsDTO {
         private long totalResumes;
         private long approvedResumes;
         private long pendingResumes;
+        private long reviewingResumes;
         private long rejectedResumes;
         private Map<ResumeStateEnum, Long> resumesByStatus;
     }

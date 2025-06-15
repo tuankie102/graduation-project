@@ -76,6 +76,21 @@ const UserResume = (props: any) => {
     {
       title: "Trạng thái",
       dataIndex: "status",
+      render: (value) => {
+        let color = "default";
+        let text = "Đang chờ duyệt";
+        if (value === "REVIEWING") {
+          color = "processing";
+          text = "Đang xem xét";
+        } else if (value === "APPROVED") {
+          color = "success";
+          text = "Đã duyệt";
+        } else if (value === "REJECTED") {
+          color = "error";
+          text = "Đã từ chối";
+        }
+        return <Tag color={color}>{text}</Tag>;
+      },
     },
     {
       title: "Ngày ứng tuyển",

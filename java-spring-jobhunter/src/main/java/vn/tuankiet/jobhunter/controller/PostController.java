@@ -3,6 +3,7 @@ package vn.tuankiet.jobhunter.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -164,7 +165,17 @@ public class PostController {
     public ResponseEntity<ResultPaginationDTO> getAllPostsForClient(
             @Filter Specification<Post> spec,
             Pageable pageable) {
-        // Client homepage luôn hiển thị tất cả posts
-        return ResponseEntity.ok().body(this.postService.fetchAll(spec, pageable));
+        Specification<Post> defaultSpec = (root, query, cb) -> {
+            LocalDate today = LocalDate.now();
+            return cb.and(
+                cb.equal(root.get("active"), true),
+                cb.greaterThanOrEqualTo(root.get("endDate"), today)
+            );
+        };
+        
+        Specification<Post> finalSpec = spec != null ? 
+            defaultSpec.and(spec) : defaultSpec;
+            
+        return ResponseEntity.ok().body(this.postService.fetchAll(finalSpec, pageable));
     }
 }

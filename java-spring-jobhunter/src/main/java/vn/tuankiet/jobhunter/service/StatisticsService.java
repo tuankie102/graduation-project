@@ -104,7 +104,7 @@ public class StatisticsService {
         statistics.setApprovedResumes(allResumes.stream().filter(r -> r.getStatus() == ResumeStateEnum.APPROVED).count());
         statistics.setPendingResumes(allResumes.stream().filter(r -> r.getStatus() == ResumeStateEnum.PENDING).count());
         statistics.setRejectedResumes(allResumes.stream().filter(r -> r.getStatus() == ResumeStateEnum.REJECTED).count());
-
+        statistics.setReviewingResumes(allResumes.stream().filter(r -> r.getStatus() == ResumeStateEnum.REVIEWING).count());        
         // Get resumes by status
         Map<ResumeStateEnum, Long> resumesByStatus = allResumes.stream()
             .collect(Collectors.groupingBy(

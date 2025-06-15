@@ -241,6 +241,7 @@ export interface Statistics {
     totalResumes: number;
     approvedResumes: number;
     pendingResumes: number;
+    reviewingResumes: number;
     rejectedResumes: number;
     resumesByStatus: Record<string, number>;
   };
