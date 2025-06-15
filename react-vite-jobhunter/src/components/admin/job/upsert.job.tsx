@@ -448,9 +448,12 @@ const ViewUpsertJob = (props: any) => {
               <Col span={24}>
                 <ProForm.Item
                   name="description"
-                  label="Miêu tả job"
+                  label="Miêu tả công việc"
                   rules={[
-                    { required: true, message: "Vui lòng nhập miêu tả job!" },
+                    {
+                      required: true,
+                      message: "Vui lòng nhập miêu tả công việc!",
+                    },
                   ]}
                 >
                   <ReactQuill theme="snow" value={value} onChange={setValue} />

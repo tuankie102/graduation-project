@@ -50,21 +50,12 @@ const ResumePage = () => {
 
   const columns: ProColumns<IResume>[] = [
     {
-      title: "Id",
-      dataIndex: "id",
+      title: "STT",
+      key: "index",
       width: 50,
-      render: (text, record, index, action) => {
-        return (
-          <a
-            href="#"
-            onClick={() => {
-              setOpenViewDetail(true);
-              setDataInit(record);
-            }}
-          >
-            {record.id}
-          </a>
-        );
+      align: "center",
+      render: (text, record, index) => {
+        return <>{index + 1 + (meta.page - 1) * meta.pageSize}</>;
       },
       hideInSearch: true,
     },

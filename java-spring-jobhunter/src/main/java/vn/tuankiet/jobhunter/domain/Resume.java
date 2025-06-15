@@ -36,11 +36,11 @@ public class Resume {
     private String email;
 
     @NotBlank(message = "url không được để trống (upload cv chưa thành công)")
-    @Column(name = "linkCV")
+    @Column(name = "lienKetCV")
     private String url;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "trangThai")
     private ResumeStateEnum status;
 
     @Column(name = "ngayTao")

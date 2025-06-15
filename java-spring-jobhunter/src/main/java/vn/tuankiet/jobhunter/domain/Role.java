@@ -40,7 +40,7 @@ public class Role {
 
     @Column(name = "moTa")
     private String description;
-    @Column(name = "active")
+    @Column(name = "hoatDong")
     private boolean active;
     @Column(name = "ngayTao")
     private Instant createdAt;
