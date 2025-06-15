@@ -58,7 +58,7 @@ const JobPage = () => {
       hideInSearch: true,
     },
     {
-      title: "Tên công việc",
+      title: "Công việc",
       dataIndex: "name",
       sorter: true,
     },
@@ -189,7 +189,7 @@ const JobPage = () => {
     const clone = { ...params };
     let parts = [];
     if (clone.name) parts.push(`name ~ '${clone.name}'`);
-    if (clone.salary) parts.push(`salary ~ '${clone.salary}'`);
+    if (clone.salary) parts.push(`salary>=${clone.salary}`);
     if (clone?.level?.length) {
       parts.push(`${sfIn("level", clone.level).toString()}`);
     }

@@ -26,6 +26,7 @@ interface IState {
     role: {
       id?: string;
       name?: string;
+      active?: boolean;
       permissions?: {
         id: string;
         name: string;
@@ -59,6 +60,7 @@ const initialState: IState = {
     role: {
       id: "",
       name: "",
+      active: false,
       permissions: [],
     },
     company: {
@@ -109,6 +111,7 @@ export const accountSlide = createSlice({
         role: {
           id: "",
           name: "",
+          active: false,
           permissions: [],
         },
         company: {
@@ -145,6 +148,7 @@ export const accountSlide = createSlice({
         state.user.address = action.payload.user?.address;
         state.user.role = action?.payload?.user?.role;
         if (!action?.payload?.user?.role) state.user.role = {};
+        state.user.role.active = action?.payload?.user?.role?.active ?? false;
         state.user.role.permissions =
           action?.payload?.user?.role?.permissions ?? [];
         state.user.company = action?.payload?.user?.company;

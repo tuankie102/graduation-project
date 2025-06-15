@@ -279,12 +279,12 @@ const ViewUpsertJob = (props: any) => {
             <Row gutter={[20, 20]}>
               <Col span={24} md={12}>
                 <ProFormText
-                  label="Tên Job"
+                  label="Tên công việc"
                   name="name"
                   rules={[
                     { required: true, message: "Vui lòng không bỏ trống" },
                   ]}
-                  placeholder="Nhập tên job"
+                  placeholder="Nhập tên công việc"
                 />
               </Col>
               <Col span={24} md={6}>
@@ -292,7 +292,7 @@ const ViewUpsertJob = (props: any) => {
                   name="skills"
                   label="Kỹ năng yêu cầu"
                   options={skills}
-                  placeholder="Please select a skill"
+                  placeholder="Chọn kỹ năng"
                   rules={[
                     { required: true, message: "Vui lòng chọn kỹ năng!" },
                   ]}
@@ -309,7 +309,7 @@ const ViewUpsertJob = (props: any) => {
                   name="location"
                   label="Địa điểm"
                   options={LOCATION_LIST.filter((item) => item.value !== "ALL")}
-                  placeholder="Please select a location"
+                  placeholder="Chọn địa điểm"
                   rules={[
                     { required: true, message: "Vui lòng chọn địa điểm!" },
                   ]}
@@ -353,7 +353,7 @@ const ViewUpsertJob = (props: any) => {
                     MIDDLE: "MIDDLE",
                     SENIOR: "SENIOR",
                   }}
-                  placeholder="Please select a level"
+                  placeholder="Chọn trình độ"
                   rules={[{ required: true, message: "Vui lòng chọn level!" }]}
                 />
               </Col>

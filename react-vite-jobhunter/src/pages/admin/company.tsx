@@ -56,7 +56,7 @@ const CompanyPage = () => {
       hideInSearch: true,
     },
     {
-      title: "Tên Công Ty",
+      title: "Công Ty",
       dataIndex: "name",
       sorter: true,
     },

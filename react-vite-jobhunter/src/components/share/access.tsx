@@ -13,12 +13,24 @@ const Access = (props: IProps) => {
   const { permission, hideChildren = false } = props;
   const [allow, setAllow] = useState<boolean>(true);
 
-  const permissions = useAppSelector(
-    (state) => state.account.user.role.permissions
-  );
+  const { permissions, active } = useAppSelector((state) => {
+    console.log(">>>>>>>>>.state.account.user.role", state.account.user.role);
+    console.log(
+      ">>>>>>>>>.state.account.user.role.active",
+      state.account.user.role.active
+    );
+    return {
+      permissions: state.account.user.role.permissions,
+      active: state.account.user.role.active,
+    };
+  });
 
   useEffect(() => {
-    if (permissions?.length) {
+    if (active === false) {
+      setAllow(false);
+    } else if (permissions?.length) {
+      console.log(">>>>>>>>>.permissions", permissions);
+      console.log(">>>>>>>>>.active", active);
       const check = permissions.find(
         (item) =>
           item.apiPath === permission.apiPath &&
@@ -29,7 +41,7 @@ const Access = (props: IProps) => {
         setAllow(true);
       } else setAllow(false);
     }
-  }, [permissions]);
+  }, [permissions, active]);
 
   return (
     <>

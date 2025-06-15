@@ -118,7 +118,7 @@ const LayoutAdmin = () => {
         ...(viewJob || ACL_ENABLE === "false"
           ? [
               {
-                label: <Link to="/admin/job">Việc Làm</Link>,
+                label: <Link to="/admin/job">Công việc</Link>,
                 key: "/admin/job",
                 icon: <ScheduleOutlined />,
               },
